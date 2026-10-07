@@ -146,3 +146,33 @@
 7. Compare the transaction numbers of two receipts: they are different.
 
 **Commit SHA:** fill in after committing
+
+### AI-M2-10 — Review — Laiza — 2026-10-07
+**Step / branch:** Review of PR #7 refactor/frontend-cleanup (Step 7, author M1 Cheny)
+
+**Prompt:** Review of refactor/frontend-cleanup prepared after Cheny pushed (typed "done").
+
+**AI response summary:** Verdict Approve: refactoring only, 29 tests pass, every refactor was re-checked in the browser, and Step 7 allows Cheny to edit any frontend file. NIT: NoTransaction.jsx uses the .success-screen style from receipt.css without importing it (works because both screens that use it import receipt.css). NOTE: the skipped 99-per-product toast is stated in the PR; the backend still enforces it.
+
+**Evaluation:** (Drafted with AI help.) Correct: a refactor PR should change no behavior, and the tests plus browser checks show that. Limitation: the review was short because of the deadline and did not re-run the browser checks itself.
+
+**Changes we made:** Posted: "Refactor only — totals, payment and receipt behave the same and 29 tests pass. Small note: NoTransaction relies on receipt.css styles. Approved."
+
+**Verification:** Approved and merged PR #7 as 3bed708.
+
+**Commit SHA:** fill in after committing
+
+### AI-M2-11 — Generation — Laiza — 2026-10-07
+**Step / branch:** Step 8 — docs/readme
+
+**Prompt:** "README.md: description, features, tech stack + why, architecture, Windows setup/run for backend and frontend, tests, API endpoint table, acceptance tests, "Group contributions" table (ID | member | GitHub username | branches | tasks | PR #s | reviewer | merge status) filled from `git log --merges --oneline main` and section 0; links to docs/ai-log/*. Do not edit anyone's Evaluation or Changes text." Follow-up typed: "go".
+
+**AI response summary:** The AI wrote README.md with all requested sections, filled the contributions table from `git log --merges --oneline main` (PRs #1–#7 and their merge commits) and the GitHub reviews, and added notes from earlier reviews: run one uvicorn process, run commands inside backend/ and frontend/, and check with staff before retrying a failed payment. It also added the demo checklist from AI-M2-09. No other member's log was edited.
+
+**Evaluation:** (Drafted with AI help.) Correct: the numbers in the README (55 backend tests, 29 frontend tests, merge SHAs, reviewers) were taken from the real repository. Limitation: PR #8's merge commit is not known until it is merged, so the table says "this PR".
+
+**Changes we made:** None — accepted as generated.
+
+**Verification:** `npm test` → 29 passed; links to the three AI logs checked against the file names.
+
+**Commit SHA:** fill in after committing
