@@ -11,7 +11,8 @@ function formatDate(isoDate) {
 
 export default function Receipt() {
   const { state, newTransaction } = useOrder()
-  const reference = state.transaction?.reference
+  const paidTransaction = state.transaction // the receipt the server returned when the payment succeeded
+  const reference = paidTransaction?.reference
   const [receipt, setReceipt] = useState(null)
   const [status, setStatus] = useState('loading') // 'loading' | 'ready' | 'error'
   const [errorMessage, setErrorMessage] = useState('')
@@ -28,11 +29,18 @@ export default function Receipt() {
         setStatus('ready')
       } catch (error) {
         if (!isCurrent()) return
+        // The server can forget a receipt (restart, or another serverless instance). The payment
+        // already succeeded, so show the receipt the server returned at payment time instead.
+        if (error.status === 404) {
+          setReceipt(paidTransaction)
+          setStatus('ready')
+          return
+        }
         setErrorMessage(error.message)
         setStatus('error')
       }
     },
-    [reference],
+    [reference, paidTransaction],
   )
 
   useEffect(() => {

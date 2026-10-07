@@ -176,3 +176,18 @@
 **Verification:** `npm test` → 29 passed; links to the three AI logs checked against the file names.
 
 **Commit SHA:** f9aa43a
+
+### AI-M2-12 — Debugging — Laiza — 2026-10-07
+**Step / branch:** Extra after Step 9 — fix/receipt-fallback
+
+**Prompt:** Typed at the shared keyboard: "can i deploy both on vercel i have tried it before i deployed django serverless" (the team wants the backend on Vercel too).
+
+**AI response summary:** Problem: the backend keeps transactions in memory; on Vercel a payment can be saved by one serverless instance and the receipt lookup can reach another, so GET /api/transactions/{reference} returns 404 "Transaction not found." although the customer paid. Fix in Receipt.jsx (the fallback Cheny suggested in her PR #6 review): on a 404, show the receipt the server returned when the payment succeeded (state.transaction); other errors still show the message with Try again.
+
+**Evaluation:** (Drafted with AI help.) Correct: the customer always gets a receipt for a successful payment, and the values come from the server's own payment response, so nothing is invented. Limitation: in that case the receipt is not re-confirmed by the server; a real deployment would need a database.
+
+**Changes we made:** None — accepted as generated.
+
+**Verification:** `npm test` → 29 passed; `npm run build` → OK. Browser: Cash ₱200 on ₱140, receipt lookup forced to return 404 → receipt still shows CAMPUS STORE POS, Total ₱140.00, Cash, ₱200.00, ₱60.00 (no error screen).
+
+**Commit SHA:** fill in after committing
