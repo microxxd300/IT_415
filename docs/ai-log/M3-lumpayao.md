@@ -135,4 +135,34 @@
 
 **Verification:** `pytest` → 55 passed. Live server: card payment for 1 Soft Drink → GET TXN-20261007-141430-001 → total 3500, paid 3500, change 0, "Credit/Debit Card".
 
+**Commit SHA:** c28b37d
+
+### AI-M3-10 — Review — Lumpayao — 2026-10-07
+**Step / branch:** Review of PR #8 docs/readme (Step 8, author M2 Laiza)
+
+**Prompt:** Review of docs/readme prepared after Laiza typed "done".
+
+**AI response summary:** The AI checked README.md against the repository: setup commands match the real folders, the API table matches CLAUDE.md section 4, test counts (55 backend, 29 frontend), merge commits and reviewers match GitHub, and only Laiza's files changed. One MEDIUM finding: the README said all 7 acceptance tests are automated, but "Back keeps the cart" and "empty cart after New Transaction" are only checked by hand. The sentence was corrected on Laiza's branch before the merge.
+
+**Evaluation:** (Drafted with AI help at Kurt's request.) Correct: the overclaim was real and would have been easy for the instructor to question; every other number in the README was checked against git and GitHub. Limitation: the review checked facts and links, not writing style.
+
+**Changes we made:** Posted: "README is complete and matches the repo: setup commands, API table, 55 + 29 tests, merge commits and reviewers are correct. The one overclaim about automated acceptance tests was fixed. Approved." Merged PR #8 as f28c07f.
+
+**Verification:** PR #8 approved by microxxd300 and merged as f28c07f.
+
+**Commit SHA:** fill in after committing
+
+### AI-M3-11 — Review — Lumpayao — 2026-10-07
+**Step / branch:** Step 9 — final check on main (read-only)
+
+**Prompt:** "Run pytest and npm test on the latest main. Trace acceptance 1–7 through the code. Report PASS/FAIL with reasons and the manual demo checklist. Print `git log -1 --format=%H` (the final integration commit SHA). Change nothing." Follow-up typed: "merged".
+
+**AI response summary:** On main f28c07f: `pytest` → 55 passed; `npm ci` + `npm test` → 29 passed; `npm run build` → OK; git status clean (nothing changed). End-to-end browser run against the real backend: 1 ₱90/₱50/₱35 total ₱175 — PASS; 2 Coffee ₱135 total ₱220, back to ₱175 — PASS; 3 Remove Soft Drink ₱140, Summary ₱140, Back keeps Coffee and Sandwich — PASS; 4 Cash ₱100 on ₱140 stays with the exact insufficient message — PASS; 5 Cash ₱200 → receipt ₱140/₱200/₱60/Cash, exact → ₱0.00 — PASS; 6 QR and Card paid ₱140.00, change ₱0.00, correct method — PASS; 7 New Transaction → 0 items, ₱0.00, old reference gone, TXN-…-001 ≠ TXN-…-002 — PASS. Final integration commit: f28c07f3176a627a4e5df0afcb923a89ee292d0d.
+
+**Evaluation:** (Drafted with AI help at Kurt's request.) Correct: the check ran on exactly what is on main, in a real browser with the real backend, not only unit tests. Limitations: optional improvements were not done because of the 9 pm deadline (99-per-product toast on the kiosk, keypad limit toast, receipt fallback after a backend restart; backend message for a malformed item and no maximum cash amount).
+
+**Changes we made:** None to the app — Step 9 is read-only; this log entry is added in a separate small PR.
+
+**Verification:** Results above; final SHA f28c07f3176a627a4e5df0afcb923a89ee292d0d.
+
 **Commit SHA:** fill in after committing
