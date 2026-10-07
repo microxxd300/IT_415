@@ -25,11 +25,13 @@ A simple app that works and that we can explain line by line beats a complicated
 
 ## 2. Tech stack and why
 - Backend: Python 3.11+, FastAPI, Pydantic, Uvicorn. Input is validated automatically and Swagger docs are served at /docs.
-- Storage: SQLite via Python's built-in sqlite3 (backend/kiosk.db, git-ignored, created and seeded on startup).
-  Why: no server to install, transactions persist, and AUTOINCREMENT ids guarantee unique transaction references.
+- Storage: NO database (team decision, 2026-10-07, during review of feature/backend-products). Products are hard-coded in backend/app/store.py;
+  completed transactions are kept in memory (a dict + counter + lock in store.py) while the server runs.
+  Why: a database is not required by the exam, one kiosk needs no shared or historical data, and there is nothing to install or configure.
+  Trade-off: receipts are lost when the server restarts; references include date + time so they never repeat across restarts.
 - Frontend: React 18 + Vite, plain JavaScript, plain CSS. No router: the current screen lives in React state, so Back keeps the cart.
 - Tests: pytest + FastAPI TestClient (backend); Vitest for pure utility functions (frontend).
-- ALL money is INTEGER CENTAVOS (database, API, state). Format as "₱1,234.00" only for display. Never do float math on pesos.
+- ALL money is INTEGER CENTAVOS (backend, API, state). Format as "₱1,234.00" only for display. Never do float math on pesos.
 
 ## 3. Run commands (Windows PowerShell)
 - Backend: cd C:\Projects\IT_415_backend\backend ; py -m venv .venv ; .\.venv\Scripts\Activate.ps1 ; pip install -r requirements.txt ; uvicorn app.main:app --reload  → http://127.0.0.1:8000/docs ; tests: pytest
@@ -48,21 +50,22 @@ Every error response is {"detail": "<one human-readable sentence>"} — validati
   201 → Receipt
   400 → insufficient cash: "Insufficient payment. Please enter at least ₱140.00. You are short by ₱40.00."
   422 → empty items, unknown product, quantity < 1, missing/invalid/negative amount_paid for cash, invalid method.
-  The server recomputes every price and total from the database and never trusts client prices. A rejected payment saves NOTHING.
+  The server recomputes every price and total from its own product list and never trusts client prices. A rejected payment saves NOTHING.
 - GET /api/transactions/{reference} → 200 Receipt | 404 "Transaction not found."
-- Receipt = {"reference": "TXN-2026-00001", "created_at": ISO datetime, "items": [{"product_id", "name", "unit_price", "quantity", "subtotal"}], "total",
+- Receipt = {"reference": "TXN-20261007-143015-001", "created_at": ISO datetime, "items": [{"product_id", "name", "unit_price", "quantity", "subtotal"}], "total",
   "payment_method": "cash", "payment_method_label": "Cash" | "QR Payment" | "Credit/Debit Card", "amount_paid", "change", "status": "Payment Successful"}
-- Reference = "TXN-" + year + "-" + zero-padded 5-digit AUTOINCREMENT id, created only when the transaction is saved.
+- Reference = "TXN-" + YYYYMMDD + "-" + HHMMSS + "-" + zero-padded 3-digit in-memory counter (e.g. TXN-20261007-143015-001),
+  created only when the transaction is saved. The counter restarts with the server; the date and time keep references unique.
 
 ## 5. Backend structure (owner: M3 Lumpayao)
 backend/requirements.txt (fastapi, uvicorn[standard], pydantic, pytest, httpx)
-backend/app/main.py — app, CORS, {"detail"} error handlers, routers, startup DB init
-backend/app/database.py — sqlite3 connection (path from env KIOSK_DB, default kiosk.db), tables products / transactions / transaction_items, seed the 6 products if empty
+backend/app/main.py — app, CORS, {"detail"} error handlers, routers
+backend/app/store.py — in-memory data: PRODUCTS (hard-coded), and (Step 4) the transactions dict, counter and lock
 backend/app/schemas.py — Pydantic models
 backend/app/services/pricing.py — pure functions: format_peso, build_lines, calculate_total, validate_cash, compute_change
-backend/app/services/transactions.py — create_transaction (one DB transaction), get_transaction
+backend/app/services/transactions.py — create_transaction (validate everything first, then save under the lock), get_transaction
 backend/app/routers/products.py, backend/app/routers/transactions.py
-backend/tests/ — tests use a temporary database file, never kiosk.db
+backend/tests/ — tests clear the in-memory transactions before each test
 
 ## 6. Frontend structure, ownership and contract
 Created by M1 Cheny in feature/frontend-setup, then FROZEN (only the refactor step may edit them):
@@ -86,7 +89,7 @@ Contract:
 - newTransaction(): clears cart, transaction and category; goes to 'selection'; toast "New transaction started — previous order cleared". Products stay loaded.
 
 ## 7. Business rules and touchscreen UI
-- Products (seeded by the backend): Coffee ₱45 Drinks, Sandwich ₱50 Food, Soft Drink ₱35 Drinks, Cookies ₱25 Snacks, Bottled Water ₱20 Drinks, Chocolate ₱25 Snacks. Category tabs: All / Drinks / Food / Snacks.
+- Products (hard-coded in the backend): Coffee ₱45 Drinks, Sandwich ₱50 Food, Soft Drink ₱35 Drinks, Cookies ₱25 Snacks, Bottled Water ₱20 Drinks, Chocolate ₱25 Snacks. Category tabs: All / Drinks / Food / Snacks.
 - Subtotal = unit price × qty; Total = sum of subtotals. Quantity never goes below 0; decreasing from 1 removes the line; every line has a Remove button.
 - "Proceed to Payment" is disabled when the cart is empty, with an explanation. Back from Order Summary keeps the cart.
 - Cash: on-screen keypad 0–9 + Clear and quick amounts (Exact, ₱200, ₱500, ₱1,000), no keyboard typing. The frontend pre-checks for instant feedback; the backend is the final authority.
@@ -168,6 +171,7 @@ STEP 0 — Lumpayao, repository setup (no branch; this is the first commit on ma
 STEP 1 — Lumpayao, feature/backend-products:
  Part 1: requirements.txt, app/main.py with CORS + {"detail"} error handlers + GET /api/health, tests/test_health.py.
  Part 2: app/database.py (tables, seed, KIOSK_DB), Product schema, GET /api/products, tests using a temporary DB. Explain how to verify in Swagger /docs.
+ (Changed during review: SQLite removed; products are hard-coded in app/store.py. See section 2.)
 STEP 2 — Cheny, feature/frontend-setup:
  Part 1: scaffold Vite + React (JavaScript) in frontend/ (if create-vite asks interactive questions, create the files manually), add Vitest with an "npm test" script,
  src/api/client.js, src/utils/money.js + money.test.js.
@@ -181,8 +185,8 @@ STEP 3 — Cheny, feature/frontend-ordering:
 STEP 4 — Lumpayao, feature/backend-transactions:
  Part 1: services/pricing.py + tests/test_pricing.py (175 → 220 → 140; ₱100 on ₱140 rejected with the exact message; ₱200 → ₱60; exact → 0).
  Part 2: POST /api/transactions per section 4 (Pydantic validation, server-side prices, cash validation, qr/card paid = total,
- transaction + items inserted in ONE DB transaction, reference from the AUTOINCREMENT id, nothing saved on rejection).
- Part 3: GET /api/transactions/{reference} + tests/test_transactions.py for acceptance 4–7 (different references; a rejected payment saves no row).
+ validate everything before saving, save the transaction in memory under a lock, reference from date + time + counter, nothing saved on rejection).
+ Part 3: GET /api/transactions/{reference} + tests/test_transactions.py for acceptance 4–7 (different references; a rejected payment saves nothing).
 STEP 5 — Laiza, feature/frontend-payment:
  Part 1: src/utils/payment.js (parse keypad amount, pre-validate cash with the same message format as the backend, change preview) + payment.test.js.
  Part 2: Keypad + CashPayment: total, amount-paid display, keypad, quick amounts, live change preview, Pay Now (disabled while the request runs), Change payment method.
