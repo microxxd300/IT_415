@@ -121,5 +121,7 @@ export function useToast() {
 
 // Used only by the Toast component to read the message currently shown.
 export function useCurrentToast() {
-  return useContext(ToastContext).toast
+  const context = useContext(ToastContext)
+  if (!context) throw new Error('useCurrentToast must be used inside <ToastProvider>')
+  return context.toast
 }

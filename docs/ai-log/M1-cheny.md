@@ -44,3 +44,22 @@
 **Verification:** `npm test` → 5 passed; `npm run build` → OK. Browser (Chrome, 1280×800, backend running): Item Selection shows "6 products loaded"; Proceed → Order Summary (step 1 ✓) → Continue → Payment Method (3 buttons) → QR Payment → Confirm → Payment Successful → View Receipt → Receipt → New Transaction → back to Item Selection with the toast "New transaction started — previous order cleared". Console: only a favicon 404, fixed with the favicon link.
 
 **Commit SHA:** d3c32ff
+
+### AI-M1-04 — Debugging — Cheny — 2026-10-07
+**Step / branch:** Step 2, fix review on PR #2 feature/frontend-setup (reviewer: Laiza)
+
+**Prompt:** Laiza's review (Request changes): "client.js: add a timeout (AbortSignal.timeout(15000)) so a frozen server can't leave the kiosk stuck on Loading or Processing. App.jsx: add cleanup to the product-loading effect. StrictMode sends 2 requests, and a late failure can show the error screen. money.js: guard against non-numbers (NaN) and add a test. OrderContext: add the provider check to useCurrentToast."
+
+**AI response summary:** One fix per comment:
+1. client.js — every fetch now has `signal: AbortSignal.timeout(15000)`; a timeout falls into the existing catch and shows "Cannot reach the server. Please ask staff for help."
+2. App.jsx — the product-loading effect passes an isCurrent() check and its cleanup marks the earlier load as stale, so only the latest request can change the screen; the Try again button now calls `loadProducts()` without passing the click event.
+3. money.js — formatPeso returns "—" for anything that is not a finite number (undefined, null, "4500", NaN); new test added.
+4. OrderContext.jsx — useCurrentToast throws a clear error when used outside ToastProvider, like useOrder and useToast.
+
+**Evaluation:** TODO
+
+**Changes we made:** TODO
+
+**Verification:** `npm test` → 6 passed (new NaN test); `npm run build` → OK. Browser: simulated the server failing for the first 2 requests (both StrictMode loads) → "Cannot reach the server. Please ask staff for help." with Try again → clicked Try again → "6 products loaded". Limitation noted: if a payment request times out after the server already saved it, the kiosk shows an error although the payment went through (rare; to watch in Step 5).
+
+**Commit SHA:** fill in after committing
