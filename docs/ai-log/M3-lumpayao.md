@@ -7,9 +7,9 @@
 
 **AI response summary:** The AI created CLAUDE.md with sections 0–11 of the master prompt, .claude/settings.json turning off AI attribution in commits and PRs, a .gitignore for Python, Node, editor and OS files (it also ignores .env files and .claude/settings.local.json), a placeholder README.md, and one AI log file per member. It did not create backend/ or frontend/ and did not run any git write commands.
 
-**Evaluation:** TODO
+**Evaluation:** (Drafted with AI help at Kurt's request.) Correct: all 7 files were created, CLAUDE.md matches sections 0–11 and the .gitignore keeps .venv, kiosk.db and node_modules out of the repo. Missing: no .gitattributes, so Git later showed "LF will be replaced by CRLF" warnings on Windows (harmless). Limitation: the AI cannot check GitHub settings, so the branch rule and collaborator invites had to be checked by hand.
 
-**Changes we made:** TODO
+**Changes we made:** None — the files were accepted as generated.
 
 **Verification:** `git status` lists exactly 7 new files (CLAUDE.md, .claude/settings.json, .gitignore, README.md, docs/ai-log/M1-cheny.md, M2-laiza.md, M3-lumpayao.md); no .db, .venv or node_modules files appear.
 
@@ -22,11 +22,11 @@
 
 **AI response summary:** The AI created backend/requirements.txt, backend/pytest.ini (so `pytest` can import `app` from inside backend/), backend/app/__init__.py and backend/app/main.py. main.py creates the FastAPI app, allows CORS only from http://localhost:5173 and http://127.0.0.1:5173, adds GET /api/health, and registers three error handlers so every error is {"detail": "<sentence>"}: HTTP errors keep their message, validation errors are turned into one sentence such as "items.0.quantity: Input should be greater than 0." (the Pydantic "Value error, " prefix is removed), and unexpected errors return 500 with a staff-help message. tests/test_health.py has 6 tests.
 
-**Evaluation:** TODO
+**Evaluation:** (Drafted with AI help at Kurt's request.) Correct: CORS only allows the Vite dev server (port 5173), and every error comes back as {"detail": "..."} so the frontend can always show it. Limitations: the validation handler reports only the first error, and field paths like "items.0.quantity" are technical rather than customer-friendly; the 500 handler hides the real error from the customer (it is still logged in the uvicorn terminal). The test client prints a deprecation warning about httpx with the newest Starlette.
 
-**Changes we made:** TODO
+**Changes we made:** None — the code was accepted as generated.
 
-**Verification:** `pytest -v` → 6 passed (health ok, 404 detail, CORS allowed for localhost:5173, CORS refused for other origins, validation message with field name, validation message without the Pydantic prefix). One StarletteDeprecationWarning about httpx in the test client; it does not affect the app.
+**Verification:** `pytest -v` → 6 passed (health ok, 404 detail, CORS allowed for localhost:5173, CORS refused for other origins, validation message with field name, validation message without the Pydantic prefix). One StarletteDeprecationWarning about httpx in the test client; it does not affect the app. Manual: Swagger GET /api/health → 200 {"status": "ok"}.
 
 **Commit SHA:** 4da145b
 
@@ -37,10 +37,12 @@
 
 **AI response summary:** The AI created backend/app/database.py (database path from the KIOSK_DB environment variable, default backend/kiosk.db; connect() with rows readable by column name and foreign keys on; get_db() dependency that always closes the connection; init_db() that creates the products, transactions and transaction_items tables and seeds the 6 products only when the table is empty), backend/app/schemas.py with the Product model (price in integer centavos), backend/app/routers/products.py with GET /api/products ordered by id, and a startup hook in main.py that runs init_db(). The change column is named change_due to avoid confusion with SQL keywords; the API will still return it as "change". Tests: conftest.py points KIOSK_DB at a temporary file; test_products.py has 5 tests.
 
-**Evaluation:** TODO
+**Evaluation:** (Drafted with AI help at Kurt's request.) Correct: products are seeded only once, prices are integer centavos, and tests use a temporary database so kiosk.db is never changed. Limitations: because seeding only runs on an empty table, editing SEED_PRODUCTS later does not update an existing kiosk.db (it must be deleted first); there is no API to add or edit products. The transactions tables are created now but are not used until Step 4. One problem during the end-of-step check: `pytest` failed with "No module named 'fastapi'" because the virtual environment was not activated in that terminal — not a code bug; tests pass with .venv active.
 
-**Changes we made:** TODO
+**Changes we made:** None — the code was accepted as generated.
 
 **Verification:** `pytest -v` → 11 passed (6 health + 5 products: exact 6 products and prices, integer centavos, seeding twice keeps 6 rows, all 3 tables exist, tests use the temporary database). Live server: GET http://127.0.0.1:8000/api/products returned Coffee 4500 (₱45.00), Sandwich 5000 (₱50.00), Soft Drink 3500 (₱35.00), Cookies 2500 (₱25.00), Bottled Water 2000 (₱20.00), Chocolate 2500 (₱25.00). `git status` does not list kiosk.db (git-ignored).
 
 **Commit SHA:** 3eceaf7
+
+> Note: after the Step 1 push, Kurt asked the AI to run the git commands (add, commit, push) for his own steps to save time. Commits are still authored as Kurt Lumpayao.
