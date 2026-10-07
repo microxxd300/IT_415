@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MAX_CASH_PESOS, changeFor, checkCash, entryToCentavos, pressKey } from './payment.js'
+import { MAX_CASH_PESOS, buildPaymentRequest, changeFor, checkCash, entryToCentavos, pressKey } from './payment.js'
 
 function type(...keys) {
   return keys.reduce(pressKey, '')
@@ -62,5 +62,28 @@ describe('cash check (same rules as the backend)', () => {
   it('shows no change while the amount is not enough', () => {
     expect(changeFor(10000, 14000)).toBeNull()
     expect(changeFor(null, 14000)).toBeNull()
+  })
+})
+
+describe('payment request', () => {
+  const cart = [
+    { productId: 1, name: 'Coffee', unitPrice: 4500, qty: 2 },
+    { productId: 2, name: 'Sandwich', unitPrice: 5000, qty: 1 },
+  ]
+
+  it('sends only product ids and quantities, plus amount_paid for cash', () => {
+    expect(buildPaymentRequest(cart, 'cash', 20000)).toEqual({
+      items: [
+        { product_id: 1, quantity: 2 },
+        { product_id: 2, quantity: 1 },
+      ],
+      payment_method: 'cash',
+      amount_paid: 20000,
+    })
+  })
+
+  it('leaves out amount_paid for QR and card', () => {
+    expect(buildPaymentRequest(cart, 'qr')).not.toHaveProperty('amount_paid')
+    expect(buildPaymentRequest(cart, 'card').payment_method).toBe('card')
   })
 })

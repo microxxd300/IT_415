@@ -35,6 +35,16 @@ export function checkCash(paidCentavos, totalCentavos) {
   return { ok: true, message: '' }
 }
 
+// The body for POST /api/transactions. Only ids and quantities are sent: the server sets the prices.
+export function buildPaymentRequest(cart, paymentMethod, amountPaid = null) {
+  const request = {
+    items: cart.map((line) => ({ product_id: line.productId, quantity: line.qty })),
+    payment_method: paymentMethod,
+  }
+  if (paymentMethod === 'cash') request.amount_paid = amountPaid
+  return request
+}
+
 // Change = amount paid − total, or null while the amount is not enough yet.
 export function changeFor(paidCentavos, totalCentavos) {
   if (paidCentavos === null || paidCentavos < totalCentavos) return null

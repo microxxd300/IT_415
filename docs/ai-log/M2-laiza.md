@@ -13,7 +13,7 @@
 
 **Verification:** Cheny fixed all 4 items (1242f7b, b99644a, 3ab0e36, 6a2a135); I re-checked and approved ("All 4 fixes look good, tests pass. Approved.") and merged PR #2 as 0c0df51.
 
-**Commit SHA:** fill in after committing
+**Commit SHA:** 4042362
 
 ### AI-M2-02 — Review — Laiza — 2026-10-07
 **Step / branch:** Review of PR #3 feature/frontend-ordering (Step 3, author M1 Cheny)
@@ -28,7 +28,7 @@
 
 **Verification:** Approved and merged PR #3 as 60cfff4.
 
-**Commit SHA:** fill in after committing
+**Commit SHA:** 4042362
 
 ### AI-M2-03 — Review — Laiza — 2026-10-07
 **Step / branch:** Review of PR #4 feature/backend-transactions (Step 4, author M3 Lumpayao)
@@ -43,7 +43,7 @@
 
 **Verification:** Approved and merged PR #4 as ae32903.
 
-**Commit SHA:** fill in after committing
+**Commit SHA:** 4042362
 
 ### AI-M2-04 — Generation — Laiza — 2026-10-07
 **Step / branch:** Step 5, Part 1 — feature/frontend-payment
@@ -57,5 +57,20 @@
 **Changes we made:** TODO
 
 **Verification:** `npm test` → 25 passed (6 money + 8 cart + 11 payment): "2","0","0" → "200" → 20000 centavos; "0","5" → "5"; back and clear; non-digits ignored; stops at 100000; ₱100 on ₱140 → exact backend sentence; empty → "Please enter the amount paid."; ₱200 on ₱140 → change 6000; exact → 0; not enough → no change shown.
+
+**Commit SHA:** 4042362
+
+### AI-M2-05 — Generation — Laiza — 2026-10-07
+**Step / branch:** Step 5, Part 2 — feature/frontend-payment
+
+**Prompt:** "Part 2: Keypad + CashPayment: total, amount-paid display, keypad, quick amounts, live change preview, Pay Now (disabled while the request runs), Change payment method. On success setTransaction(receipt) + goTo('success'); on ApiError show the message and stay on the screen." Follow-up typed: "go".
+
+**AI response summary:** The AI created Keypad.jsx (1–9, Clear, 0, ⌫ in a 3×4 grid of large keys, with spoken labels for screen readers), the real CashPayment.jsx (Total due, large Amount paid display, one feedback panel that shows "Change ₱60.00" in green, "Short by ₱40.00" in red, or the error after Pay Now; quick amounts Exact / ₱200 / ₱500 / ₱1,000 with amounts below the total disabled; Pay Now checks with checkCash first, then calls createTransaction, shows "Processing…" and disables every button while the request runs; on success setTransaction + toast "Transaction completed successfully" + Payment Successful screen; on any error it shows the message and stays) and payment.css. It also added buildPaymentRequest(cart, method, amountPaid) to payment.js (only ids and quantities are sent; the server sets prices) with 2 tests, so the QR and Card screens can reuse it. After the first browser test the error message was moved into the feedback panel because a separate box pushed Pay Now below the screen.
+
+**Evaluation:** TODO
+
+**Changes we made:** TODO
+
+**Verification:** `npm test` → 27 passed; `npm run build` → OK. Browser (backend running), Coffee ×2 + Sandwich = ₱140.00 → Cash: keypad 1-0-0 → Pay Now → stays on Cash with "Insufficient payment. Please enter at least ₱140.00. You are short by ₱40.00." (acceptance 4); Clear, 2-0-0 → "Change ₱60.00" → Pay Now → Payment Successful with toast "Transaction completed successfully" (acceptance 5). Exact → paid. With the network slowed by 1 s: button reads "Processing…" and 0 buttons are enabled. With a simulated 400 from the server: stays on Cash, shows the server message, Pay Now enabled again.
 
 **Commit SHA:** fill in after committing
