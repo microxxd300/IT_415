@@ -105,4 +105,19 @@
 
 **Verification:** `pytest` → 28 passed (12 existing + 16 new pricing tests).
 
+**Commit SHA:** 59aa5f5
+
+### AI-M3-08 — Generation — Lumpayao — 2026-10-07
+**Step / branch:** Step 4, Part 2 — feature/backend-transactions
+
+**Prompt:** "Part 2: POST /api/transactions per section 4 (Pydantic validation, server-side prices, cash validation, qr/card paid = total, validate everything before saving, save the transaction in memory under a lock, reference from date + time + counter, nothing saved on rejection)." Follow-up typed: "go".
+
+**AI response summary:** The AI added TransactionRequest, OrderItem, Receipt and ReceiptLine to schemas.py (StrictInt so "2", 2.5 or true are rejected instead of converted; quantity 1–99; method cash/qr/card; cash needs an amount_paid of 0 or more; extra fields such as a client "price" are ignored). store.py got PRODUCTS_BY_ID plus an in-memory transactions dict and counter protected by a thread lock. services/transactions.py create_transaction prices the order with pricing.py, validates cash, and only then makes the reference (TXN-YYYYMMDD-HHMMSS-NNN) and saves; QR/card pay exactly the total with ₱0.00 change. routers/transactions.py returns 201, 400 for insufficient cash and 422 for invalid orders. main.py now gives customer-friendly 422 messages for known fields (Cheny's PR #1 suggestion), e.g. "Quantity must be between 1 and 99." conftest.py clears the transactions before every test.
+
+**Evaluation:** (Drafted with AI help at Kurt's request.) Correct: every acceptance case for payments is covered by tests (₱200 → ₱60, exact → ₱0, QR/card paid = total, ₱100 on ₱140 → 400 with the exact sentence) and every rejected request leaves 0 saved transactions. Client prices are proven to be ignored. Limitations: transactions disappear when the server restarts (team decision: no database); the friendly message map shows only the first error and uses one sentence per field, so a missing "items" and an empty "items" get the same message.
+
+**Changes we made:** None — accepted as generated.
+
+**Verification:** `pytest` → 48 passed (20 new transaction tests). Live server: POST Coffee ×2 + Sandwich, cash 20000 → 201, TXN-20261007-141258-001, total 14000, paid 20000, change 6000, "Cash"; cash 10000 → 400 "Insufficient payment. Please enter at least ₱140.00. You are short by ₱40.00."
+
 **Commit SHA:** fill in after committing

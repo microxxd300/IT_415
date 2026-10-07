@@ -6,10 +6,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.routers import products
+from app.routers import products, transactions
 
 # The Vite dev server can be opened with either host name.
 ALLOWED_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
+
+# Customer-friendly messages for invalid fields; the kiosk shows "detail" as it is.
+FIELD_MESSAGES = {
+    "items": "Your order must contain at least one item.",
+    "product_id": "One of the products in your order is not valid.",
+    "quantity": "Quantity must be between 1 and 99.",
+    "payment_method": "Please choose Cash, QR Payment or Credit/Debit Card.",
+    "amount_paid": "Please enter a valid amount paid.",
+}
 
 app = FastAPI(title="Campus Store POS Kiosk API", version="1.0.0")
 
@@ -24,6 +33,9 @@ app.add_middleware(
 def validation_message(exc: RequestValidationError) -> str:
     """Turn the first Pydantic validation error into one readable sentence."""
     error = exc.errors()[0]
+    field_names = [part for part in error["loc"] if isinstance(part, str) and part != "body"]
+    if field_names and field_names[-1] in FIELD_MESSAGES:
+        return FIELD_MESSAGES[field_names[-1]]
     field = ".".join(str(part) for part in error["loc"] if part != "body")
     message = str(error["msg"]).removeprefix("Value error, ").rstrip(".")
     return f"{field}: {message}." if field else f"{message}."
@@ -64,3 +76,4 @@ def health() -> dict:
 
 
 app.include_router(products.router)
+app.include_router(transactions.router)
