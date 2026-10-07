@@ -97,9 +97,9 @@
 
 **AI response summary:** The AI built PaymentSuccess.jsx: a green check mark beside "Payment Successful", the transaction number in a highlighted box, then Transaction amount, Amount paid, Change and Payment method — all read from the receipt the server returned (state.transaction), nothing recalculated on the kiosk — and a View Receipt button. The success toast "Transaction completed successfully" is already shown by usePayment when the screen opens, so it is not shown twice. If there is no transaction (for example the screen is reached by mistake), it shows "No completed payment" with a New Transaction button. Styles are in the new receipt.css. After the browser check the check mark was moved beside the title because View Receipt was below the screen.
 
-**Evaluation:** TODO
+**Evaluation:** (Drafted with AI help at Laiza's request.) Correct: every value on the screen comes from the receipt the server returned, so the screen cannot show a different amount than what was saved; the toast is not repeated because usePayment already shows it. Problem found while testing: View Receipt was below the screen, fixed by putting the check mark beside the title. Limitation: the "No completed payment" fallback can only be reached by a bug, so it was not tested in the browser.
 
-**Changes we made:** TODO
+**Changes we made:** None to the code; we accepted the compact layout after the browser test.
 
 **Verification:** `npm test` → 27 passed; `npm run build` → OK. Browser: Coffee ×2 + Sandwich, Cash ₱200 → Payment Successful: TXN-20261007-144742-007, Transaction amount ₱140.00, Amount paid ₱200.00, Change ₱60.00, Payment method Cash, toast "Transaction completed successfully"; View Receipt fits on a 674-px-tall window.
 
@@ -112,10 +112,37 @@
 
 **AI response summary:** The AI built Receipt.jsx: it loads the saved receipt from the server with getTransaction(reference) (which proves the transaction was really saved), shows "Loading receipt…" while waiting, and on error shows the server message with Try again and New Transaction (stale answers are ignored, like App.jsx). The receipt "paper" shows CAMPUS STORE POS, Transaction No., date and time (e.g. "October 7, 2026 at 2:49 PM"), each item as qty × unit price with its subtotal, then Total, Payment method, Amount paid, Change, Status and a thank-you line. A side panel has "🖨 Print receipt" (window.print()) and New Transaction. receipt.css got the receipt styles and print CSS that prints only the receipt (80 mm wide, no header, step bar, buttons or toast).
 
-**Evaluation:** TODO
+**Evaluation:** (Drafted with AI help at Laiza's request.) Correct: the receipt is loaded again from the server by its reference, which proves the transaction was saved, and the values matched acceptance 5 and 6 exactly; the error state was tested by forcing a 404. Limitations: the print preview was not checked automatically (I check it by hand), and receipts cannot be loaded after the backend restarts because there is no database.
 
-**Changes we made:** TODO
+**Changes we made:** None — accepted as generated.
 
 **Verification:** `npm test` → 27 passed; `npm run build` → OK. Browser: Cash ₱200 on ₱140 → View Receipt → CAMPUS STORE POS, TXN-20261007-144944-008, October 7, 2026 at 2:49 PM, Coffee 2 × ₱45.00 = ₱90.00, Sandwich 1 × ₱50.00 = ₱50.00, Total ₱140.00, Cash, Amount paid ₱200.00, Change ₱60.00, Payment Successful (acceptance 5); New Transaction button visible without scrolling. QR order with the receipt request forced to 404 → "Transaction not found." with Try again and New Transaction → Try again → QR receipt: Total ₱140.00, QR Payment, paid ₱140.00, change ₱0.00 (acceptance 6). Print preview not tested automatically — check by hand.
+
+**Commit SHA:** 721cc8c
+
+### AI-M2-09 — Review — Laiza — 2026-10-07
+**Step / branch:** Step 6, Part 3 — feature/frontend-receipt
+
+**Prompt:** "Part 3: New Transaction → newTransaction(); verify everything is cleared and the old reference never reappears; list manual steps for acceptance 5–7." Follow-up typed: "go".
+
+**AI response summary:** The AI checked that New Transaction on the Receipt already calls newTransaction() (built by Cheny in Step 2), so no code change was needed, and proved acceptance 5–7 in the browser against the real backend with a script that taps the real buttons. It wrote the demo checklist below.
+
+**Evaluation:** (Drafted with AI help at Laiza's request.) Correct: the AI did not add code that was not needed — New Transaction already worked — and instead proved acceptance 5–7 with real button taps against the real backend, including that the old reference disappears and the category resets. Limitation: the check is a one-time browser script, not an automated test that runs with npm test.
+
+**Changes we made:** None; we keep the demo checklist for the presentation.
+
+**Verification:** Browser, order Coffee ×2 + Sandwich = ₱140.00 each time:
+- Acceptance 5 — Cash ₱200: TXN-20261007-145149-011, Total ₱140.00, Cash, paid ₱200.00, change ₱60.00. Cash Exact: TXN-…-012, paid ₱140.00, change ₱0.00.
+- Acceptance 6 — QR: TXN-…-013, QR Payment, paid ₱140.00, change ₱0.00. Card: TXN-…-014, Credit/Debit Card, paid ₱140.00, change ₱0.00.
+- Acceptance 7 — after New Transaction: Menu screen, "0 items", Total ₱0.00, Proceed disabled, category back to "All" (it was "Snacks"), toast "New transaction started — previous order cleared", the old reference appears nowhere on the page; all 4 references are different.
+
+**Demo checklist (for the instructor):**
+1. Start the backend (`uvicorn app.main:app --reload` in backend/ with .venv active) and the frontend (`npm run dev` in frontend/), open http://localhost:5173.
+2. Add Coffee ×2, Sandwich, Soft Drink → ₱90 / ₱50 / ₱35, Total ₱175.00. + Coffee → ₱220.00, − → ₱175.00. Remove Soft Drink → ₱140.00.
+3. Proceed → Summary ₱140.00 → Back keeps the cart → Proceed → Continue → Payment Method.
+4. Cash: type 100 → Pay Now → "Insufficient payment. Please enter at least ₱140.00. You are short by ₱40.00." and stay.
+5. Clear, ₱200 → Change ₱60.00 → Pay Now → Payment Successful → View Receipt → ₱140 / ₱200 / ₱60 / Cash.
+6. New Transaction → empty cart, ₱0.00, toast. Repeat the order with QR (Confirm Payment) and with Card (Processing payment… 2 s) → paid ₱140.00, change ₱0.00.
+7. Compare the transaction numbers of two receipts: they are different.
 
 **Commit SHA:** fill in after committing
