@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { getTransaction } from '../api/client.js'
+import NoTransaction from '../components/NoTransaction.jsx'
 import { useOrder } from '../state/OrderContext.jsx'
 import { formatPeso } from '../utils/money.js'
 import '../styles/receipt.css'
@@ -18,11 +19,7 @@ export default function Receipt() {
   // The receipt is loaded from the server, which proves the transaction was really saved.
   const loadReceipt = useCallback(
     async (isCurrent = () => true) => {
-      if (!reference) {
-        setErrorMessage('There is no completed transaction to show.')
-        setStatus('error')
-        return
-      }
+      if (!reference) return
       setStatus('loading')
       try {
         const saved = await getTransaction(reference)
@@ -46,6 +43,8 @@ export default function Receipt() {
     }
   }, [loadReceipt])
 
+  if (!reference) return <NoTransaction />
+
   if (status === 'loading') {
     return <p className="status-message">Loading receipt…</p>
   }
@@ -55,11 +54,9 @@ export default function Receipt() {
       <div className="status-message status-error" role="alert">
         <p>{errorMessage}</p>
         <div className="receipt-error-actions">
-          {reference && (
-            <button type="button" className="btn btn-secondary" onClick={() => loadReceipt()}>
-              Try again
-            </button>
-          )}
+          <button type="button" className="btn btn-secondary" onClick={() => loadReceipt()}>
+            Try again
+          </button>
           <button type="button" className="btn btn-primary" onClick={newTransaction}>
             New Transaction
           </button>

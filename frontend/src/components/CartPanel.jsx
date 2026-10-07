@@ -1,5 +1,5 @@
 import { useOrder, useToast } from '../state/OrderContext.jsx'
-import { lineSubtotal } from '../utils/cart.js'
+import { formatItemCount, lineSubtotal } from '../utils/cart.js'
 import { formatPeso } from '../utils/money.js'
 
 export default function CartPanel() {
@@ -26,9 +26,7 @@ export default function CartPanel() {
     <aside className="cart-panel" aria-labelledby="cart-title">
       <div className="cart-header">
         <h2 id="cart-title">Your Order</h2>
-        <span className="cart-count">
-          {itemCount} {itemCount === 1 ? 'item' : 'items'}
-        </span>
+        <span className="cart-count">{formatItemCount(itemCount)}</span>
       </div>
 
       {isEmpty ? (

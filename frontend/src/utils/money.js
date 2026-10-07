@@ -8,3 +8,9 @@ export function formatPeso(centavos) {
   const cents = String(amount % 100).padStart(2, '0')
   return `${sign}₱${pesos}.${cents}`
 }
+
+// Short label for whole-peso buttons: 100000 → "₱1,000". Use formatPeso for amounts with centavos.
+export function formatPesoWhole(centavos) {
+  if (!Number.isFinite(centavos)) return '—'
+  return `₱${Math.round(centavos / 100).toLocaleString('en-US')}`
+}

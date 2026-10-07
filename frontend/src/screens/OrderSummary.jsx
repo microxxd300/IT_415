@@ -1,5 +1,5 @@
 import { useOrder } from '../state/OrderContext.jsx'
-import { lineSubtotal } from '../utils/cart.js'
+import { formatItemCount, lineSubtotal } from '../utils/cart.js'
 import { formatPeso } from '../utils/money.js'
 import '../styles/ordering.css'
 
@@ -24,9 +24,7 @@ export default function OrderSummary() {
     <section className="screen summary-screen">
       <div>
         <h2 className="screen-title">Review your order</h2>
-        <p className="screen-subtitle">
-          {itemCount} {itemCount === 1 ? 'item' : 'items'} · Check everything before you pay.
-        </p>
+        <p className="screen-subtitle">{formatItemCount(itemCount)} · Check everything before you pay.</p>
       </div>
 
       <table className="summary-table">

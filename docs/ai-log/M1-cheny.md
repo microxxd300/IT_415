@@ -108,3 +108,93 @@
 **Verification:** `npm test` → 14 passed; `npm run build` → OK. Browser: Coffee ×2 + Sandwich → Order Summary shows Coffee 2 × ₱45.00 = ₱90.00, Sandwich 1 × ₱50.00 = ₱50.00, Total ₱140.00, "3 items"; "← Back" → Item Selection still has Coffee ×2 and Sandwich, Total ₱140.00; Continue → Payment Method shows Amount due ₱140.00 and the three tiles, all on one screen; Cash → Cash placeholder with toast "Cash selected".
 
 **Commit SHA:** 507e075
+
+### AI-M1-08 — Review — Cheny — 2026-10-07
+**Step / branch:** Review of PR #5 feature/frontend-payment (Step 5, author M2 Laiza)
+
+**Prompt:** "review feature/frontend-payment as Cheny" (started after Laiza typed "done")
+
+**AI response summary:** The AI checked PR #5 (9 files) against the API contract, ownership, centavo math, the payment rules in CLAUDE.md section 7 and the acceptance tests. Verdict: Approve. Suggestions: (1) LOW — no feedback when the keypad reaches ₱100,000; (2) LOW — a timeout after the server already saved could lead a customer to pay twice; add a README note; (3) NOTE — add hooks/usePayment.js to the CLAUDE.md ownership table; (4) NIT — aria-live on the amount display announces every key press.
+
+**Evaluation:** (Drafted with AI help at Cheny's request.) Correct: acceptance 4–6 and the "no double payment" rule had already been proven in the browser against the real backend, so approving was safe; suggestion 2 connects to the timeout limitation I found in my own AI-M1-04. Limitation: the review did not re-run the browser checks itself — it relied on the checks recorded during Laiza's build.
+
+**Changes we made:** Posted an Approve review in my own summary: "Works end to end: ₱100 on ₱140 is rejected and stays, ₱200 gives ₱60 change, QR and card pay ₱140 with ₱0 change, and buttons are disabled while paying. Small suggestions: a toast when the keypad hits ₱100,000, and a README note to check with staff before retrying after a payment error." Items 3 and 4 were left for Kurt (CLAUDE.md) and the Step 7 refactor.
+
+**Verification:** Approved and merged PR #5 as f0e42e2.
+
+**Commit SHA:** 4f72a58
+
+### AI-M1-09 — Review — Cheny — 2026-10-07
+**Step / branch:** Review of PR #6 feature/frontend-receipt (Step 6, author M2 Laiza)
+
+**Prompt:** "review feature/frontend-receipt as Cheny" (started after Laiza typed "done")
+
+**AI response summary:** The AI checked PR #6 (4 files) against the receipt fields in CLAUDE.md section 7, ownership, centavo math and acceptance 5–7. Verdict: Approve. Suggestions: (1) LOW — if the backend restarts between paying and View Receipt, the lookup returns "Transaction not found." although the kiosk still has the receipt in memory; fall back to it; (2) LOW — the "no transaction → New Transaction" block is duplicated in PaymentSuccess and Receipt, for the Step 7 refactor; (3) NOTE — put the AI-M2-09 demo checklist in the README.
+
+**Evaluation:** (Drafted with AI help at Cheny's request.) Correct: suggestion 1 is a real gap caused by our no-database decision, and suggestion 2 gives me a concrete task for Step 7. Limitation: the review relied on the browser checks recorded during Laiza's build instead of repeating them.
+
+**Changes we made:** Posted an Approve review in my own summary: "Receipt matches the payment (₱140 / ₱200 / ₱60 / Cash; QR and card ₱0 change), New Transaction clears everything and references differ. Suggestions: fall back to the in-memory receipt if the server restarted, and the duplicated "no transaction" block can go in the Step 7 cleanup."
+
+**Verification:** Approved and merged PR #6 as 790f384.
+
+**Commit SHA:** 4f72a58
+
+### AI-M1-10 — Refactoring — Cheny — 2026-10-07
+**Step / branch:** Step 7, Part 1 — refactor/frontend-cleanup
+
+**Prompt:** "Run npm test first and report the result. One part per refactor (duplicated logic, unclear names, oversized components, calculations that belong in src/utils/). Show BEFORE/AFTER snippets and why each is better. Behavior must not change; npm test after each part." Follow-up typed: "ready", then "go" (Part 1: text and money formatting belong in src/utils/).
+
+**AI response summary:** Baseline before any change: `npm test` → 27 passed (3 files), build OK. Two refactors:
+1. Duplicated "item/items" text.
+   BEFORE (CartPanel.jsx and OrderSummary.jsx): `{itemCount} {itemCount === 1 ? 'item' : 'items'}`
+   AFTER: `formatItemCount(itemCount)` from utils/cart.js (`` `${count} ${count === 1 ? 'item' : 'items'}` ``) + 1 test.
+   Why better: one place to change the wording, and it is tested.
+2. Money formatting hidden inside a screen.
+   BEFORE (CashPayment.jsx): a local `function shortPeso(centavos) { return `₱${(centavos / 100).toLocaleString('en-US')}` }`
+   AFTER: `formatPesoWhole(centavos)` in utils/money.js next to formatPeso, with the same "—" guard for invalid values + 1 test.
+   Why better: all peso formatting lives in money.js and is tested; the screen only lays things out.
+
+**Evaluation:** (Drafted with AI help at Cheny's request.) Correct: both helpers are now tested and the screens show exactly the same text as before (checked in the browser). Limitation: small gain — the duplicated code was only one line in two places.
+
+**Changes we made:** None — accepted as generated.
+
+**Verification:** `npm test` → 28 passed after refactor 1, 29 passed after refactor 2; `npm run build` → OK. Browser: cart shows "0 items" → "1 item" → "3 items", Summary "3 items · Check everything before you pay.", Cash quick buttons "Exact", "₱200", "₱500", "₱1,000" — identical to before.
+
+**Commit SHA:** 4f72a58
+
+### AI-M1-11 — Refactoring — Cheny — 2026-10-07
+**Step / branch:** Step 7, Part 2 — refactor/frontend-cleanup
+
+**Prompt:** Step 7 refactor rules (one part per refactor, BEFORE/AFTER, behavior must not change, npm test after each part). Follow-up typed: "next", then "go" (Part 2: one shared "no transaction" block, suggested in my PR #6 review).
+
+**AI response summary:** Duplicated fallback screen.
+BEFORE: PaymentSuccess.jsx had its own `if (!transaction) { return <section>… "No completed payment" … New Transaction </section> }` and Receipt.jsx handled a missing reference inside loadReceipt with a different message ("There is no completed transaction to show.") shown as an error with an optional Try again.
+AFTER: one component, src/components/NoTransaction.jsx ("No completed payment" + New Transaction); PaymentSuccess does `if (!transaction) return <NoTransaction />`, Receipt does `if (!reference) return <NoTransaction />` after its hooks, and loadReceipt simply returns when there is no reference, so Try again is always meaningful.
+Why better: one wording, one place to change, and Receipt's loading code no longer mixes "no payment" with "server error". The only visible difference is the Receipt's fallback wording, which appears only through a bug (Proceed is disabled for an empty cart).
+
+**Evaluation:** (Drafted with AI help at Cheny's request.) Correct: one fallback component instead of two copies, and Receipt's loading code is simpler. Limitation: the Receipt fallback wording changed slightly, but that screen only appears through a bug.
+
+**Changes we made:** None — accepted as generated.
+
+**Verification:** `npm test` → 29 passed; `npm run build` → OK. Browser: Coffee ×2 + Sandwich, Cash ₱200 → Success ₱140.00 / ₱200.00 / ₱60.00 / Cash → Receipt Total ₱140.00, Cash, ₱200.00, ₱60.00 → New Transaction → Menu, ₱0.00 — same as before the refactor.
+
+**Commit SHA:** d97157c
+
+### AI-M1-12 — Refactoring — Cheny — 2026-10-07
+**Step / branch:** Step 7, Part 3 — refactor/frontend-cleanup
+
+**Prompt:** Step 7 refactor rules (one part per refactor, BEFORE/AFTER, behavior must not change, npm test after each part). Follow-up typed: "go" (Part 3: .btn-block belongs in the shared styles, from Laiza's PR #3 review).
+
+**AI response summary:** Shared style in the wrong file.
+BEFORE: `.btn-block { width: 100%; }` was in ordering.css, which only the ordering screens import.
+AFTER: the same rule is in base.css next to the other .btn styles, so any screen can use a full-width button.
+Why better: general button styles live in one file; screen CSS files only hold screen layout.
+Correction recorded: in Step 3 (AI-M1-06) the AI wrote that the step bar was too wide at phone width. Re-checked with a properly emulated 375-px phone screen: nothing overflows (page width = screen width). The earlier screenshot was wrong because the test browser window could not shrink below 486 px, so no change was made.
+
+**Evaluation:** (Drafted with AI help at Cheny's request.) Correct: the general button style now lives with the other button styles, and the AI corrected its own earlier wrong claim about the step bar instead of 'fixing' something that was not broken. Limitation: the 99-per-product toast from CLAUDE.md section 7 was not added — skipped by the team because of the 9 pm deadline (the backend still rejects more than 99).
+
+**Changes we made:** None to the code; we decided to skip the optional fixes (99 limit toast, keypad limit toast, receipt fallback) to meet the deadline.
+
+**Verification:** `npm test` → 29 passed; `npm run build` → OK. Browser: "Proceed to Payment" is still full width (352 px = the order panel's width). Phone emulation 375×812: no element wider than the screen.
+
+**Commit SHA:** 92b951f

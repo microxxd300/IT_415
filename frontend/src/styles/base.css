@@ -254,6 +254,11 @@ p {
   color: var(--color-danger);
 }
 
+/* Full-width button, e.g. "Proceed to Payment" in the order panel. */
+.btn-block {
+  width: 100%;
+}
+
 /* ---------- Loading / error messages ---------- */
 
 .status-message {
