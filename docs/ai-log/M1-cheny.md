@@ -56,9 +56,9 @@
 3. money.js — formatPeso returns "—" for anything that is not a finite number (undefined, null, "4500", NaN); new test added.
 4. OrderContext.jsx — useCurrentToast throws a clear error when used outside ToastProvider, like useOrder and useToast.
 
-**Evaluation:** TODO
+**Evaluation:** (Drafted with AI help at Cheny's request.) Correct: each of Laiza's four comments was fixed in its own commit, and the AI proved the stale-load fix in the browser by simulating two failed loads and pressing Try again. Limitation found by the AI itself: if a payment request times out after the server already saved it, the kiosk would show an error even though the payment went through — rare, but Laiza should keep it in mind in Step 5. formatPeso now shows "—" for bad values instead of hiding the bug.
 
-**Changes we made:** TODO
+**Changes we made:** None — accepted as generated; committed as four separate fix commits, one per review comment.
 
 **Verification:** `npm test` → 6 passed (new NaN test); `npm run build` → OK. Browser: simulated the server failing for the first 2 requests (both StrictMode loads) → "Cannot reach the server. Please ask staff for help." with Try again → clicked Try again → "6 products loaded". Limitation noted: if a payment request times out after the server already saved it, the kiosk shows an error although the payment went through (rare; to watch in Step 5).
 
@@ -71,13 +71,13 @@
 
 **AI response summary:** The AI created src/utils/cart.js with pure functions that return a new cart and never change the old one: addItem (adds a line or increases the quantity if the product is already in the cart), increaseQty, decreaseQty (decreasing from 1 removes the line), removeItem, lineSubtotal (unit price × quantity), cartTotal (sum of subtotals) and itemCount. The OrderContext reducer now calls these functions instead of doing the math itself, and cartTotal/itemCount in the context use them too, so the screens get the same values as before. cart.test.js has 8 tests using the backend's centavo prices.
 
-**Evaluation:** TODO
+**Evaluation:** (Drafted with AI help at Cheny's request.) Correct: the tests use the instructor's own acceptance numbers (₱175 → ₱220 → ₱140) with the backend's centavo prices, and they check that the original cart is never changed. Moving the math out of the reducer means the screens show exactly the tested values. Limitation: the tests cover cart.js only, not the screens; those were checked by hand in the browser.
 
-**Changes we made:** TODO
+**Changes we made:** None — accepted as generated.
 
 **Verification:** `npm test` → 14 passed (6 money + 8 cart): acceptance 1 (9000 / 5000 / 3500, total 17500 = ₱175.00), acceptance 2 (Coffee 3 → 13500, total 22000; back to 2 → 17500), acceptance 3 (remove Soft Drink → 14000), same product twice → one line with qty 2, decrease from 1 → line removed and never negative, item count 4, empty cart → 0, original cart never changed. `npm run build` → OK.
 
-**Commit SHA:** fill in after committing
+**Commit SHA:** 0438183
 
 ### AI-M1-06 — Generation — Cheny — 2026-10-07
 **Step / branch:** Step 3, Part 2 — feature/frontend-ordering
@@ -86,13 +86,13 @@
 
 **AI response summary:** The AI created ProductCard.jsx (the whole card is one large button with an icon, name, category, price and a quantity badge when the product is in the order), CartPanel.jsx ("Your Order" with item count, one line per product with unit price, − qty + buttons, Remove and subtotal, an empty state, the total, and "Proceed to Payment" disabled with "Add at least one item to continue." when the cart is empty), the real ItemSelection.jsx (All / Drinks / Food / Snacks tabs with counts, product grid, cart panel) and ordering.css. Toasts: "Product added — Coffee", "Coffee quantity: 3", "Coffee removed". During the browser check the AI found that with 3 or more lines the Total and Proceed button were pushed below the screen; it changed ordering.css so the selection screen fills exactly one screen and only the menu and the order list scroll.
 
-**Evaluation:** TODO
+**Evaluation:** (Drafted with AI help at Cheny's request.) Correct: all acceptance clicks 1–3 gave the right totals in the browser, every action shows a toast, and Proceed is disabled with a reason when the cart is empty. Problem found during testing: with 3 or more items, Total and Proceed were pushed below the screen; the AI fixed it by making the screen fit the window. Limitations: emoji icons depend on the device's emoji font; at phone width the step bar from base.css is too wide (left for Step 7).
 
-**Changes we made:** TODO
+**Changes we made:** None to the code; we accepted the layout fix the AI proposed after the browser test.
 
 **Verification:** `npm test` → 14 passed; `npm run build` → OK. Browser (1280×800, backend running): empty cart → ₱0.00 and Proceed disabled with the hint; Coffee ×2 + Sandwich + Soft Drink → ₱90.00 / ₱50.00 / ₱35.00, Total ₱175.00, "4 items"; + Coffee → ₱135.00, Total ₱220.00, toast "Coffee quantity: 3"; − Coffee → Total ₱175.00; Remove Soft Drink → Total ₱140.00, toast "Soft Drink removed"; Drinks tab shows Coffee, Soft Drink, Bottled Water. At 420px wide the layout becomes one column. Known issue (not in this part's files): at phone width the step indicator in base.css is slightly too wide — for the Step 7 refactor.
 
-**Commit SHA:** fill in after committing
+**Commit SHA:** 67a2405
 
 ### AI-M1-07 — Generation — Cheny — 2026-10-07
 **Step / branch:** Step 3, Part 3 — feature/frontend-ordering
@@ -101,10 +101,10 @@
 
 **AI response summary:** The AI built OrderSummary.jsx ("Review your order": item count, a table with Product / Qty / Unit price / Subtotal, a large Total, "← Back" to Item Selection and "Continue to Payment"; if the cart is somehow empty it shows a message and a Back to Menu button) and PaymentMethod.jsx ("How would you like to pay?": Amount due, three large tiles with icon, name and one-line description — Cash, QR Payment, Credit/Debit Card — and "← Back to Order"; choosing one shows a toast such as "Cash selected"). It added the table and tile styles to ordering.css. During the browser check the payment tiles were first stacked and pushed "Back to Order" below the screen; the AI changed them to three tiles side by side (stacked again on narrow screens) and tightened the spacing so the whole screen fits.
 
-**Evaluation:** TODO
+**Evaluation:** (Drafted with AI help at Cheny's request.) Correct: the summary uses the same tested totals as Item Selection, Back keeps the cart, and the amount due matches (₱140.00). Problem found during testing: the stacked payment buttons pushed "Back to Order" off the screen; the AI changed them to three tiles side by side. Limitation: QR and card descriptions are generic because real payment integration is not required.
 
-**Changes we made:** TODO
+**Changes we made:** None to the code; we accepted the tile layout fix after the browser test.
 
 **Verification:** `npm test` → 14 passed; `npm run build` → OK. Browser: Coffee ×2 + Sandwich → Order Summary shows Coffee 2 × ₱45.00 = ₱90.00, Sandwich 1 × ₱50.00 = ₱50.00, Total ₱140.00, "3 items"; "← Back" → Item Selection still has Coffee ×2 and Sandwich, Total ₱140.00; Continue → Payment Method shows Amount due ₱140.00 and the three tiles, all on one screen; Cash → Cash placeholder with toast "Cash selected".
 
-**Commit SHA:** fill in after committing
+**Commit SHA:** 507e075
