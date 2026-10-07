@@ -93,3 +93,18 @@
 **Verification:** `npm test` → 14 passed; `npm run build` → OK. Browser (1280×800, backend running): empty cart → ₱0.00 and Proceed disabled with the hint; Coffee ×2 + Sandwich + Soft Drink → ₱90.00 / ₱50.00 / ₱35.00, Total ₱175.00, "4 items"; + Coffee → ₱135.00, Total ₱220.00, toast "Coffee quantity: 3"; − Coffee → Total ₱175.00; Remove Soft Drink → Total ₱140.00, toast "Soft Drink removed"; Drinks tab shows Coffee, Soft Drink, Bottled Water. At 420px wide the layout becomes one column. Known issue (not in this part's files): at phone width the step indicator in base.css is slightly too wide — for the Step 7 refactor.
 
 **Commit SHA:** fill in after committing
+
+### AI-M1-07 — Generation — Cheny — 2026-10-07
+**Step / branch:** Step 3, Part 3 — feature/frontend-ordering
+
+**Prompt:** "Part 3: OrderSummary (table, item count, total, Back keeps the cart, Continue to Payment) and PaymentMethod (amount due, 3 large buttons with descriptions, Back to Order); ordering.css." Follow-up typed: "go".
+
+**AI response summary:** The AI built OrderSummary.jsx ("Review your order": item count, a table with Product / Qty / Unit price / Subtotal, a large Total, "← Back" to Item Selection and "Continue to Payment"; if the cart is somehow empty it shows a message and a Back to Menu button) and PaymentMethod.jsx ("How would you like to pay?": Amount due, three large tiles with icon, name and one-line description — Cash, QR Payment, Credit/Debit Card — and "← Back to Order"; choosing one shows a toast such as "Cash selected"). It added the table and tile styles to ordering.css. During the browser check the payment tiles were first stacked and pushed "Back to Order" below the screen; the AI changed them to three tiles side by side (stacked again on narrow screens) and tightened the spacing so the whole screen fits.
+
+**Evaluation:** TODO
+
+**Changes we made:** TODO
+
+**Verification:** `npm test` → 14 passed; `npm run build` → OK. Browser: Coffee ×2 + Sandwich → Order Summary shows Coffee 2 × ₱45.00 = ₱90.00, Sandwich 1 × ₱50.00 = ₱50.00, Total ₱140.00, "3 items"; "← Back" → Item Selection still has Coffee ×2 and Sandwich, Total ₱140.00; Continue → Payment Method shows Amount due ₱140.00 and the three tiles, all on one screen; Cash → Cash placeholder with toast "Cash selected".
+
+**Commit SHA:** fill in after committing

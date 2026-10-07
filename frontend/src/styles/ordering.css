@@ -315,6 +315,165 @@
 
 /* ---------- Small screens ---------- */
 
+/* ---------- Order Summary ---------- */
+
+.summary-screen,
+.method-screen {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.method-screen {
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.05rem;
+}
+
+.summary-table th,
+.summary-table td {
+  padding: var(--space-2) var(--space-1);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.summary-table thead th {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.summary-table tbody th {
+  font-weight: 700;
+}
+
+.summary-table .num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.summary-table tfoot th,
+.summary-table tfoot td {
+  border-bottom: none;
+  padding-top: var(--space-3);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.summary-total {
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+/* ---------- Payment Method ---------- */
+
+.amount-due {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  font-size: 1.2rem;
+}
+
+.amount-due strong {
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+/* Three large tiles side by side, so the whole screen fits without scrolling. */
+.method-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.method-button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  min-height: 160px;
+  padding: var(--space-3);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  transition: transform 0.08s ease, border-color 0.15s ease;
+}
+
+.method-button:active {
+  transform: scale(0.98);
+  border-color: var(--color-dark);
+}
+
+.method-button:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.method-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+  font-size: 2rem;
+}
+
+.method-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.method-label {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.method-description {
+  color: var(--color-text-muted);
+}
+
+.method-arrow {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .method-list {
+    grid-template-columns: 1fr;
+  }
+
+  .method-button {
+    flex-direction: row;
+    align-items: center;
+    min-height: 96px;
+    padding: var(--space-3);
+  }
+
+  .method-arrow {
+    display: block;
+    font-size: 2rem;
+    color: var(--color-text-muted);
+  }
+}
+
 /* Narrow screens: one column and normal page scrolling. */
 @media (max-width: 960px) {
   .kiosk:has(.ordering-layout) {
