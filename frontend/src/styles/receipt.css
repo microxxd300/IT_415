@@ -1,0 +1,247 @@
+/* Payment Successful and Receipt screens. */
+
+/* ---------- Payment Successful ---------- */
+
+.success-screen {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+/* Check mark beside the title, so the whole screen fits without scrolling. */
+.success-header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: var(--space-3);
+  align-items: center;
+}
+
+.success-header .success-check {
+  grid-row: span 2;
+}
+
+.success-check {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--color-success);
+  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 800;
+  animation: success-pop 0.3s ease-out;
+}
+
+.success-reference {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.success-reference strong {
+  color: var(--color-text);
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.success-details {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.success-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 1.1rem;
+}
+
+.success-row dt {
+  color: var(--color-text-muted);
+}
+
+.success-row dd {
+  margin: 0;
+  font-weight: 800;
+}
+
+/* ---------- Receipt ---------- */
+
+.receipt-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 460px) minmax(220px, 300px);
+  justify-content: center;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.receipt-paper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: #ffffff;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+  font-size: 0.95rem;
+}
+
+.receipt-head {
+  text-align: center;
+}
+
+.receipt-head h2 {
+  font-size: 1.3rem;
+  letter-spacing: 0.08em;
+}
+
+.receipt-head p {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.receipt-meta,
+.receipt-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: var(--space-1) 0;
+  border-top: 1px dashed var(--color-border);
+}
+
+.receipt-meta div,
+.receipt-summary div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.receipt-meta dt,
+.receipt-summary dt {
+  color: var(--color-text-muted);
+}
+
+.receipt-meta dd,
+.receipt-summary dd {
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.receipt-summary .is-total {
+  font-size: 1.2rem;
+}
+
+.receipt-summary .is-total dt {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.receipt-items {
+  width: 100%;
+  border-collapse: collapse;
+  border-top: 1px dashed var(--color-border);
+}
+
+.receipt-items th,
+.receipt-items td {
+  padding: 4px 0;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+
+.receipt-items thead th {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.receipt-items .num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.receipt-thanks {
+  padding-top: var(--space-1);
+  border-top: 1px dashed var(--color-border);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.receipt-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.receipt-error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+@media (max-width: 760px) {
+  .receipt-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Print only the receipt paper: no header, step bar, buttons or toast. */
+@media print {
+  body {
+    background: #ffffff;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .receipt-paper,
+  .receipt-paper * {
+    visibility: visible;
+  }
+
+  .receipt-paper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 80mm;
+    padding: 0;
+    box-shadow: none;
+    color: #000000;
+  }
+}
+
+@keyframes success-pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .success-check {
+    animation: none;
+  }
+}
