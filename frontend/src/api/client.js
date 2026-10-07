@@ -2,6 +2,9 @@
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000'
 
+// A frozen server must never leave the kiosk stuck on "Loading…" or "Processing payment…".
+const REQUEST_TIMEOUT_MS = 15000
+
 export class ApiError extends Error {
   constructor(message, status) {
     super(message)
@@ -16,8 +19,10 @@ async function request(path, options = {}) {
     response = await fetch(`${API_URL}${path}`, {
       ...options,
       headers: { 'Content-Type': 'application/json', ...options.headers },
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     })
   } catch {
+    // Network failure or timeout.
     throw new ApiError('Cannot reach the server. Please ask staff for help.', 0)
   }
 
