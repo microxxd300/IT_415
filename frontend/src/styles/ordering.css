@@ -120,6 +120,19 @@
   font-size: 3.5rem;
 }
 
+/* Fixed height = the picture box (110px), so large images can never spill over the text. */
+.product-icon {
+  overflow: hidden;
+}
+
+.product-icon img {
+  display: block;
+  width: 100%;
+  height: 110px;
+  padding: 8px;
+  object-fit: contain;
+}
+
 .product-name {
   font-size: 1.05rem;
   font-weight: 700;
