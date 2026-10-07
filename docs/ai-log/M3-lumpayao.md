@@ -180,4 +180,19 @@
 
 **Verification:** `pytest` → 57 passed (2 new: only local origins by default; extra origins read from KIOSK_ALLOWED_ORIGINS).
 
+**Commit SHA:** 0208f05
+
+### AI-M3-13 — Generation — Lumpayao — 2026-10-07
+**Step / branch:** Extra after Step 9 — feature/vercel-backend
+
+**Prompt:** "can i deploy both on vercel i have tried it before i deployed django serverless"
+
+**AI response summary:** The AI confirmed both parts can run on Vercel as two projects (root frontend and root backend) and added backend/api/index.py (Vercel's Python entry point; it adds the backend folder to the import path and exposes the FastAPI app) and backend/vercel.json (sends every path to that function, so /api/health, /api/products and /api/transactions keep working). It warned that serverless instances do not share memory, so a receipt lookup can miss a payment saved by another instance; the frontend Receipt therefore needs a fallback to the receipt it already received (a separate change in Laiza's Receipt.jsx).
+
+**Evaluation:** (Drafted with AI help at Kurt's request.) Correct: the existing app is reused unchanged, and the entry file was tested locally (health ok, 6 products). Limitation: in-memory transactions on serverless are not reliable across instances — acceptable for a demo only together with the frontend fallback.
+
+**Changes we made:** None — accepted as generated.
+
+**Verification:** Loading api/index.py and calling it with TestClient → /api/health {"status": "ok"}, /api/products 6 products; `pytest` → 57 passed.
+
 **Commit SHA:** fill in after committing
