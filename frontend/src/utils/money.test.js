@@ -23,4 +23,11 @@ describe('formatPeso', () => {
   it('puts the minus sign before the peso sign', () => {
     expect(formatPeso(-2500)).toBe('-₱25.00')
   })
+
+  it('shows a dash instead of NaN for missing or invalid amounts', () => {
+    expect(formatPeso(undefined)).toBe('—')
+    expect(formatPeso(null)).toBe('—')
+    expect(formatPeso('4500')).toBe('—')
+    expect(formatPeso(NaN)).toBe('—')
+  })
 })
