@@ -198,3 +198,18 @@ Correction recorded: in Step 3 (AI-M1-06) the AI wrote that the step bar was too
 **Verification:** `npm test` → 29 passed; `npm run build` → OK. Browser: "Proceed to Payment" is still full width (352 px = the order panel's width). Phone emulation 375×812: no element wider than the screen.
 
 **Commit SHA:** 92b951f
+
+### AI-M1-13 — Generation — Cheny — 2026-10-07
+**Step / branch:** Extra after Step 9 — feature/frontend-images
+
+**Prompt:** Typed at the shared keyboard: "can you give me a prompt for images in the menu and a logo with exact sizes so that i can put it easily — first prompt for logo (based on theme), then for the menu (based on theme), then add assets folder in frontend", then "done uploading the images add those", then "the pictures and words are stacking themselves".
+
+**AI response summary:** The AI wrote image-generation prompts matching the kiosk theme (logo 512×512, menu items 600×600, transparent PNG), created frontend/public/assets/ with a README listing the files, then processed the uploaded images: two (sandwich, soda) had a fake checkerboard painted in instead of real transparency, so it removed it, and it resized all images to 600×600 / 512×512 (from up to 1536 px and 2.3 MB). ProductCard.jsx shows the product picture with the emoji as a fallback if a file is missing; Header.jsx shows the logo with "CS" as a fallback; index.html uses the logo as the browser-tab icon. First version: pictures overflowed the 110-px picture box and covered the names — fixed by giving the image a fixed 110-px height and hiding overflow.
+
+**Evaluation:** (Drafted with AI help.) Correct: the AI noticed the fake transparency and the oversized files before using them, and kept a fallback so a missing image never breaks a card. Mistake: the first CSS used height: 100%, which does not work inside that box, so the pictures overlapped the text; found by the user and fixed. Limitation: images are AI-generated samples, not photos of the real store's products.
+
+**Changes we made:** None to the code after the overlap fix; we chose our own uploaded images (file names soda.png and water.png kept as uploaded).
+
+**Verification:** `npm test` → 29 passed; `npm run build` → OK. Browser 1280×800: all 7 images load (no emoji fallbacks), each product picture is 110 px tall, inside its box and above the product name; logo shows in the header.
+
+**Commit SHA:** fill in after committing
