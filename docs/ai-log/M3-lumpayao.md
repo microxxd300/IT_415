@@ -28,4 +28,19 @@
 
 **Verification:** `pytest -v` → 6 passed (health ok, 404 detail, CORS allowed for localhost:5173, CORS refused for other origins, validation message with field name, validation message without the Pydantic prefix). One StarletteDeprecationWarning about httpx in the test client; it does not affect the app.
 
+**Commit SHA:** 4da145b
+
+### AI-M3-03 — Generation — Lumpayao — 2026-10-07
+**Step / branch:** Step 1, Part 2 — feature/backend-products
+
+**Prompt:** "Part 2: app/database.py (tables, seed, KIOSK_DB), Product schema, GET /api/products, tests using a temporary DB. Explain how to verify in Swagger /docs." Follow-up typed: "next", then "go".
+
+**AI response summary:** The AI created backend/app/database.py (database path from the KIOSK_DB environment variable, default backend/kiosk.db; connect() with rows readable by column name and foreign keys on; get_db() dependency that always closes the connection; init_db() that creates the products, transactions and transaction_items tables and seeds the 6 products only when the table is empty), backend/app/schemas.py with the Product model (price in integer centavos), backend/app/routers/products.py with GET /api/products ordered by id, and a startup hook in main.py that runs init_db(). The change column is named change_due to avoid confusion with SQL keywords; the API will still return it as "change". Tests: conftest.py points KIOSK_DB at a temporary file; test_products.py has 5 tests.
+
+**Evaluation:** TODO
+
+**Changes we made:** TODO
+
+**Verification:** `pytest -v` → 11 passed (6 health + 5 products: exact 6 products and prices, integer centavos, seeding twice keeps 6 rows, all 3 tables exist, tests use the temporary database). Live server: GET http://127.0.0.1:8000/api/products returned Coffee 4500 (₱45.00), Sandwich 5000 (₱50.00), Soft Drink 3500 (₱35.00), Cookies 2500 (₱25.00), Bottled Water 2000 (₱20.00), Chocolate 2500 (₱25.00). `git status` does not list kiosk.db (git-ignored).
+
 **Commit SHA:** fill in after committing
