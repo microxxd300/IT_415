@@ -90,4 +90,19 @@
 
 **Verification:** `pip install -r requirements.txt` → nothing to change; `pip check` → "No broken requirements found."; `pytest` → 12 passed.
 
+**Commit SHA:** 5cf0711
+
+### AI-M3-07 — Generation — Lumpayao — 2026-10-07
+**Step / branch:** Step 4, Part 1 — feature/backend-transactions
+
+**Prompt:** "Part 1: services/pricing.py + tests/test_pricing.py (175 → 220 → 140; ₱100 on ₱140 rejected with the exact message; ₱200 → ₱60; exact → 0)." Follow-up typed: "go". Kurt asked the AI to create the branch and run the git commands for this step.
+
+**AI response summary:** The AI created backend/app/services/pricing.py with pure functions on integer centavos: format_peso (4500 → "₱45.00", with thousands separators), build_lines (prices every requested item from the server's own product list, rejects unknown products, merges the same product requested twice into one line, and rejects more than 99 of one product — the limit Laiza suggested in the PR #3 review), calculate_total, validate_cash (raises "Insufficient payment. Please enter at least ₱140.00. You are short by ₱40.00.") and compute_change. tests/test_pricing.py has 16 tests. It also updated CLAUDE.md: Cheny's real username hchenii, setProducts in the frontend contract, and the 99-per-product limit.
+
+**Evaluation:** (Drafted with AI help at Kurt's request.) Correct: the tests use the instructor's exact numbers (₱175 → ₱220 → ₱140, ₱100 on ₱140 rejected with the exact sentence, ₱200 → ₱60, exact → ₱0.00) plus a one-centavo-short edge case. Prices come only from the server's list, so a client cannot send its own price. Limitation: the functions do not check that quantities are at least 1 or that amounts are not negative — that is left to the Pydantic schema in Part 2, so pricing.py must not be called with unvalidated input.
+
+**Changes we made:** None — accepted as generated.
+
+**Verification:** `pytest` → 28 passed (12 existing + 16 new pricing tests).
+
 **Commit SHA:** fill in after committing
