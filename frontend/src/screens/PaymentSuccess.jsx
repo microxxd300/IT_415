@@ -1,24 +1,13 @@
+import NoTransaction from '../components/NoTransaction.jsx'
 import { useOrder } from '../state/OrderContext.jsx'
 import { formatPeso } from '../utils/money.js'
 import '../styles/receipt.css'
 
 export default function PaymentSuccess() {
-  const { state, goTo, newTransaction } = useOrder()
+  const { state, goTo } = useOrder()
   const transaction = state.transaction // the receipt returned by the server; nothing is recalculated here
 
-  if (!transaction) {
-    return (
-      <section className="screen success-screen">
-        <h2 className="screen-title">No completed payment</h2>
-        <p className="screen-subtitle">There is no payment to show. Please start a new transaction.</p>
-        <div className="actions">
-          <button type="button" className="btn btn-primary" onClick={newTransaction}>
-            New Transaction
-          </button>
-        </div>
-      </section>
-    )
-  }
+  if (!transaction) return <NoTransaction />
 
   const details = [
     ['Transaction amount', formatPeso(transaction.total)],

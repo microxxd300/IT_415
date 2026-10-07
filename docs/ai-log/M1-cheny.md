@@ -122,7 +122,7 @@
 
 **Verification:** Approved and merged PR #5 as f0e42e2.
 
-**Commit SHA:** fill in after committing
+**Commit SHA:** 4f72a58
 
 ### AI-M1-09 — Review — Cheny — 2026-10-07
 **Step / branch:** Review of PR #6 feature/frontend-receipt (Step 6, author M2 Laiza)
@@ -137,7 +137,7 @@
 
 **Verification:** Approved and merged PR #6 as 790f384.
 
-**Commit SHA:** fill in after committing
+**Commit SHA:** 4f72a58
 
 ### AI-M1-10 — Refactoring — Cheny — 2026-10-07
 **Step / branch:** Step 7, Part 1 — refactor/frontend-cleanup
@@ -159,5 +159,23 @@
 **Changes we made:** TODO
 
 **Verification:** `npm test` → 28 passed after refactor 1, 29 passed after refactor 2; `npm run build` → OK. Browser: cart shows "0 items" → "1 item" → "3 items", Summary "3 items · Check everything before you pay.", Cash quick buttons "Exact", "₱200", "₱500", "₱1,000" — identical to before.
+
+**Commit SHA:** 4f72a58
+
+### AI-M1-11 — Refactoring — Cheny — 2026-10-07
+**Step / branch:** Step 7, Part 2 — refactor/frontend-cleanup
+
+**Prompt:** Step 7 refactor rules (one part per refactor, BEFORE/AFTER, behavior must not change, npm test after each part). Follow-up typed: "next", then "go" (Part 2: one shared "no transaction" block, suggested in my PR #6 review).
+
+**AI response summary:** Duplicated fallback screen.
+BEFORE: PaymentSuccess.jsx had its own `if (!transaction) { return <section>… "No completed payment" … New Transaction </section> }` and Receipt.jsx handled a missing reference inside loadReceipt with a different message ("There is no completed transaction to show.") shown as an error with an optional Try again.
+AFTER: one component, src/components/NoTransaction.jsx ("No completed payment" + New Transaction); PaymentSuccess does `if (!transaction) return <NoTransaction />`, Receipt does `if (!reference) return <NoTransaction />` after its hooks, and loadReceipt simply returns when there is no reference, so Try again is always meaningful.
+Why better: one wording, one place to change, and Receipt's loading code no longer mixes "no payment" with "server error". The only visible difference is the Receipt's fallback wording, which appears only through a bug (Proceed is disabled for an empty cart).
+
+**Evaluation:** TODO
+
+**Changes we made:** TODO
+
+**Verification:** `npm test` → 29 passed; `npm run build` → OK. Browser: Coffee ×2 + Sandwich, Cash ₱200 → Success ₱140.00 / ₱200.00 / ₱60.00 / Cash → Receipt Total ₱140.00, Cash, ₱200.00, ₱60.00 → New Transaction → Menu, ₱0.00 — same as before the refactor.
 
 **Commit SHA:** fill in after committing
