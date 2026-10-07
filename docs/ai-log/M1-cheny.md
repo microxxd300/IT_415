@@ -178,4 +178,23 @@ Why better: one wording, one place to change, and Receipt's loading code no long
 
 **Verification:** `npm test` → 29 passed; `npm run build` → OK. Browser: Coffee ×2 + Sandwich, Cash ₱200 → Success ₱140.00 / ₱200.00 / ₱60.00 / Cash → Receipt Total ₱140.00, Cash, ₱200.00, ₱60.00 → New Transaction → Menu, ₱0.00 — same as before the refactor.
 
+**Commit SHA:** d97157c
+
+### AI-M1-12 — Refactoring — Cheny — 2026-10-07
+**Step / branch:** Step 7, Part 3 — refactor/frontend-cleanup
+
+**Prompt:** Step 7 refactor rules (one part per refactor, BEFORE/AFTER, behavior must not change, npm test after each part). Follow-up typed: "go" (Part 3: .btn-block belongs in the shared styles, from Laiza's PR #3 review).
+
+**AI response summary:** Shared style in the wrong file.
+BEFORE: `.btn-block { width: 100%; }` was in ordering.css, which only the ordering screens import.
+AFTER: the same rule is in base.css next to the other .btn styles, so any screen can use a full-width button.
+Why better: general button styles live in one file; screen CSS files only hold screen layout.
+Correction recorded: in Step 3 (AI-M1-06) the AI wrote that the step bar was too wide at phone width. Re-checked with a properly emulated 375-px phone screen: nothing overflows (page width = screen width). The earlier screenshot was wrong because the test browser window could not shrink below 486 px, so no change was made.
+
+**Evaluation:** TODO
+
+**Changes we made:** TODO
+
+**Verification:** `npm test` → 29 passed; `npm run build` → OK. Browser: "Proceed to Payment" is still full width (352 px = the order panel's width). Phone emulation 375×812: no element wider than the screen.
+
 **Commit SHA:** fill in after committing
