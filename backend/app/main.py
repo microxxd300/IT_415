@@ -45,9 +45,16 @@ async def validation_error_handler(request: Request, exc: RequestValidationError
 
 @app.exception_handler(Exception)
 async def unexpected_error_handler(request: Request, exc: Exception) -> JSONResponse:
+    # 500 responses are sent from outside CORSMiddleware, so the CORS header is added here;
+    # without it the browser hides this message from the kiosk.
+    headers = {}
+    origin = request.headers.get("origin")
+    if origin in ALLOWED_ORIGINS:
+        headers = {"Access-Control-Allow-Origin": origin, "Vary": "Origin"}
     return JSONResponse(
         status_code=500,
         content={"detail": "Something went wrong on the server. Please ask staff for help."},
+        headers=headers,
     )
 
 
