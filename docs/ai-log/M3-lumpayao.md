@@ -195,4 +195,19 @@
 
 **Verification:** Loading api/index.py and calling it with TestClient → /api/health {"status": "ok"}, /api/products 6 products; `pytest` → 57 passed.
 
+**Commit SHA:** dc04aa7
+
+### AI-M3-14 — Debugging — Lumpayao — 2026-10-07
+**Step / branch:** Extra after Step 9 — fix/vercel-routing
+
+**Prompt:** Kurt pasted the Vercel build log (WARNING: "Internal rewrites in backend framework projects now route requests using the rewritten destination path…") and the backend URL https://it-415.vercel.app.
+
+**AI response summary:** Error: on Vercel, https://it-415.vercel.app/api/health and /api/products returned 404 {"detail":"Not Found"} (the FastAPI app answered, so it was running). Root cause: Vercel detected the backend as a FastAPI project, and the rewrite in backend/vercel.json ("/(.*)" → "/api/index") now changes the path the app receives, so every request reached FastAPI as /api/index. Fix: delete backend/vercel.json; Vercel's FastAPI detection routes the original paths to the app.
+
+**Evaluation:** (Drafted with AI help at Kurt's request.) Correct: the warning in the build log pointed to the cause, and the 404 came from our own error format, which proved the app itself was running. Mistake: the AI added vercel.json in the previous PR based on the older Vercel behaviour.
+
+**Changes we made:** None — accepted as generated.
+
+**Verification:** Before: GET https://it-415.vercel.app/api/health → 404 {"detail":"Not Found"}. After merging and redeploying: see the live check reported in the PR.
+
 **Commit SHA:** fill in after committing
