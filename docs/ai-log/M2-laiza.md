@@ -73,4 +73,19 @@
 
 **Verification:** `npm test` → 27 passed; `npm run build` → OK. Browser (backend running), Coffee ×2 + Sandwich = ₱140.00 → Cash: keypad 1-0-0 → Pay Now → stays on Cash with "Insufficient payment. Please enter at least ₱140.00. You are short by ₱40.00." (acceptance 4); Clear, 2-0-0 → "Change ₱60.00" → Pay Now → Payment Successful with toast "Transaction completed successfully" (acceptance 5). Exact → paid. With the network slowed by 1 s: button reads "Processing…" and 0 buttons are enabled. With a simulated 400 from the server: stays on Cash, shows the server message, Pay Now enabled again.
 
+**Commit SHA:** 91c0fef
+
+### AI-M2-06 — Generation — Laiza — 2026-10-07
+**Step / branch:** Step 5, Part 3 — feature/frontend-payment
+
+**Prompt:** "Part 3: QrPayment and CardPayment per section 7 with the same success/error handling; payment.css." Follow-up typed: "go".
+
+**AI response summary:** The AI moved the "send the payment" logic into a new hook, src/hooks/usePayment.js (Processing state that disables every button, success → setTransaction + toast "Transaction completed successfully" + Payment Successful, error → message shown and stay on the screen), and switched CashPayment to it so the logic exists once. QrPayment.jsx shows the amount, a clearly labelled sample QR drawn as an SVG ("Sample QR · simulated" — it encodes nothing), 3 numbered steps starting with "Scan the QR code using your supported payment application.", Back and Confirm Payment. CardPayment.jsx shows the amount, a card graphic, "Please tap, insert, or swipe your card.", and Process Payment → "Processing payment…" with a spinner for 2 s and all buttons disabled, then the payment is sent. QR and card send no amount_paid; the server sets paid = total.
+
+**Evaluation:** TODO
+
+**Changes we made:** TODO
+
+**Verification:** `npm test` → 27 passed; `npm run build` → OK. Browser on a ₱140.00 order (responses captured from the real backend): QR → Payment Successful, TXN-20261007-142912-004, QR Payment, total 14000, paid 14000, change 0; Card → "Processing payment…" with 0 enabled buttons, then Payment Successful, TXN-20261007-142916-005, Credit/Debit Card, paid 14000, change 0 (acceptance 6). Cash re-tested after the refactor: ₱100 → stays with the insufficient message and no request sent; ₱200 → paid 20000, change 6000, Cash. Confirm Payment fits on a 674-px-tall window.
+
 **Commit SHA:** fill in after committing
