@@ -43,4 +43,4 @@
 
 **Verification:** `pytest -v` → 11 passed (6 health + 5 products: exact 6 products and prices, integer centavos, seeding twice keeps 6 rows, all 3 tables exist, tests use the temporary database). Live server: GET http://127.0.0.1:8000/api/products returned Coffee 4500 (₱45.00), Sandwich 5000 (₱50.00), Soft Drink 3500 (₱35.00), Cookies 2500 (₱25.00), Bottled Water 2000 (₱20.00), Chocolate 2500 (₱25.00). `git status` does not list kiosk.db (git-ignored).
 
-**Commit SHA:** fill in after committing
+**Commit SHA:** 3eceaf7
