@@ -1,0 +1,264 @@
+/* Payment screens: Cash (keypad), QR and Card. */
+
+.payment-screen {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+/* ---------- Cash ---------- */
+
+.cash-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.cash-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.amount-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  font-size: 1.1rem;
+}
+
+.amount-row strong {
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.amount-paid {
+  border: 2px solid var(--color-dark);
+  background: var(--color-surface);
+}
+
+.amount-paid strong {
+  font-size: 2rem;
+}
+
+.amount-paid.is-empty strong {
+  color: var(--color-text-muted);
+}
+
+.change-panel {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  min-height: 64px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+}
+
+.change-panel strong {
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.change-panel.is-ok {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.change-panel.is-short {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.quick-amounts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+
+.quick-amounts .btn {
+  padding: 0 var(--space-1);
+}
+
+.payment-error {
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* ---------- Keypad ---------- */
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+
+.keypad-key {
+  min-height: 68px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 1.6rem;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  transition: transform 0.08s ease, background-color 0.15s ease;
+}
+
+.keypad-key:active:not(:disabled) {
+  transform: scale(0.96);
+  background: var(--color-surface-muted);
+}
+
+.keypad-key:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.keypad-key:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.keypad-action {
+  background: var(--color-surface-muted);
+  font-size: 1.1rem;
+}
+
+/* ---------- QR ---------- */
+
+.qr-layout {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.qr-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  padding: var(--space-2);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.qr-box svg {
+  width: 100%;
+  max-width: 210px;
+  height: auto;
+}
+
+.qr-box figcaption {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.qr-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.payment-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding-left: 1.4em;
+  font-size: 1.05rem;
+}
+
+.payment-steps li::marker {
+  font-weight: 800;
+}
+
+/* ---------- Card ---------- */
+
+.card-terminal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  text-align: center;
+}
+
+.card-terminal .amount-row {
+  width: 100%;
+  max-width: 420px;
+  background: var(--color-surface);
+}
+
+.card-icon {
+  font-size: 4rem;
+}
+
+.card-terminal.is-processing .card-icon {
+  animation: card-pulse 1s ease-in-out infinite;
+}
+
+.card-instruction {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--color-border);
+  border-top-color: var(--color-dark);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes card-pulse {
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner,
+  .card-terminal.is-processing .card-icon {
+    animation-duration: 3s;
+  }
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 760px) {
+  .cash-layout,
+  .qr-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-amounts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
