@@ -103,4 +103,19 @@
 
 **Verification:** `npm test` → 27 passed; `npm run build` → OK. Browser: Coffee ×2 + Sandwich, Cash ₱200 → Payment Successful: TXN-20261007-144742-007, Transaction amount ₱140.00, Amount paid ₱200.00, Change ₱60.00, Payment method Cash, toast "Transaction completed successfully"; View Receipt fits on a 674-px-tall window.
 
+**Commit SHA:** af68c53
+
+### AI-M2-08 — Generation — Laiza — 2026-10-07
+**Step / branch:** Step 6, Part 2 — feature/frontend-receipt
+
+**Prompt:** "Part 2: Receipt screen loaded with getTransaction(reference) (loading + error states), all fields, optional Print via window.print() with print CSS in receipt.css." Follow-up typed: "go".
+
+**AI response summary:** The AI built Receipt.jsx: it loads the saved receipt from the server with getTransaction(reference) (which proves the transaction was really saved), shows "Loading receipt…" while waiting, and on error shows the server message with Try again and New Transaction (stale answers are ignored, like App.jsx). The receipt "paper" shows CAMPUS STORE POS, Transaction No., date and time (e.g. "October 7, 2026 at 2:49 PM"), each item as qty × unit price with its subtotal, then Total, Payment method, Amount paid, Change, Status and a thank-you line. A side panel has "🖨 Print receipt" (window.print()) and New Transaction. receipt.css got the receipt styles and print CSS that prints only the receipt (80 mm wide, no header, step bar, buttons or toast).
+
+**Evaluation:** TODO
+
+**Changes we made:** TODO
+
+**Verification:** `npm test` → 27 passed; `npm run build` → OK. Browser: Cash ₱200 on ₱140 → View Receipt → CAMPUS STORE POS, TXN-20261007-144944-008, October 7, 2026 at 2:49 PM, Coffee 2 × ₱45.00 = ₱90.00, Sandwich 1 × ₱50.00 = ₱50.00, Total ₱140.00, Cash, Amount paid ₱200.00, Change ₱60.00, Payment Successful (acceptance 5); New Transaction button visible without scrolling. QR order with the receipt request forced to 404 → "Transaction not found." with Try again and New Transaction → Try again → QR receipt: Total ₱140.00, QR Payment, paid ₱140.00, change ₱0.00 (acceptance 6). Print preview not tested automatically — check by hand.
+
 **Commit SHA:** fill in after committing
