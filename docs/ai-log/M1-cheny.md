@@ -13,7 +13,7 @@
 
 **Verification:** Posted "Request changes" on PR #1 with items 2 and 3; after fixes e6e2f66 (CORS on 500) and 5cf0711 (pinned versions), approved PR #1 ("Both fixes look good, tests pass. Approved."). PR #1 merged as 9f2e686.
 
-**Commit SHA:** fill in after committing
+**Commit SHA:** 580c1c9
 
 ### AI-M1-02 — Generation — Cheny — 2026-10-07
 **Step / branch:** Step 2, Part 1 — feature/frontend-setup
@@ -61,5 +61,20 @@
 **Changes we made:** TODO
 
 **Verification:** `npm test` → 6 passed (new NaN test); `npm run build` → OK. Browser: simulated the server failing for the first 2 requests (both StrictMode loads) → "Cannot reach the server. Please ask staff for help." with Try again → clicked Try again → "6 products loaded". Limitation noted: if a payment request times out after the server already saved it, the kiosk shows an error although the payment went through (rare; to watch in Step 5).
+
+**Commit SHA:** 6a2a135
+
+### AI-M1-05 — Generation — Cheny — 2026-10-07
+**Step / branch:** Step 3, Part 1 — feature/frontend-ordering
+
+**Prompt:** "Part 1: src/utils/cart.js pure functions + cart.test.js (acceptance 1–3, quantity never negative, decreasing from 1 removes the line); the reducer in OrderContext may be switched to use them (allowed: Cheny wrote it and nobody else has branched from it yet)." Follow-up typed: "go".
+
+**AI response summary:** The AI created src/utils/cart.js with pure functions that return a new cart and never change the old one: addItem (adds a line or increases the quantity if the product is already in the cart), increaseQty, decreaseQty (decreasing from 1 removes the line), removeItem, lineSubtotal (unit price × quantity), cartTotal (sum of subtotals) and itemCount. The OrderContext reducer now calls these functions instead of doing the math itself, and cartTotal/itemCount in the context use them too, so the screens get the same values as before. cart.test.js has 8 tests using the backend's centavo prices.
+
+**Evaluation:** TODO
+
+**Changes we made:** TODO
+
+**Verification:** `npm test` → 14 passed (6 money + 8 cart): acceptance 1 (9000 / 5000 / 3500, total 17500 = ₱175.00), acceptance 2 (Coffee 3 → 13500, total 22000; back to 2 → 17500), acceptance 3 (remove Soft Drink → 14000), same product twice → one line with qty 2, decrease from 1 → line removed and never negative, item count 4, empty cart → 0, original cart never changed. `npm run build` → OK.
 
 **Commit SHA:** fill in after committing

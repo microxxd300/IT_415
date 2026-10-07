@@ -2,6 +2,7 @@
 // Money is integer centavos everywhere (unitPrice 4500 = ₱45.00).
 
 import { createContext, useCallback, useContext, useMemo, useReducer, useRef, useState } from 'react'
+import { addItem, cartTotal, decreaseQty, increaseQty, itemCount, removeItem } from '../utils/cart.js'
 
 const OrderContext = createContext(null)
 const ToastContext = createContext(null)
@@ -20,29 +21,14 @@ function orderReducer(state, action) {
   switch (action.type) {
     case 'setProducts':
       return { ...state, products: action.products }
-    case 'add': {
-      const { product } = action
-      const inCart = state.cart.some((line) => line.productId === product.id)
-      const cart = inCart
-        ? state.cart.map((line) => (line.productId === product.id ? { ...line, qty: line.qty + 1 } : line))
-        : [...state.cart, { productId: product.id, name: product.name, unitPrice: product.price, qty: 1 }]
-      return { ...state, cart }
-    }
+    case 'add':
+      return { ...state, cart: addItem(state.cart, action.product) }
     case 'increase':
-      return {
-        ...state,
-        cart: state.cart.map((line) => (line.productId === action.id ? { ...line, qty: line.qty + 1 } : line)),
-      }
+      return { ...state, cart: increaseQty(state.cart, action.id) }
     case 'decrease':
-      // Decreasing from 1 removes the line, so a quantity can never reach 0 or go negative.
-      return {
-        ...state,
-        cart: state.cart
-          .map((line) => (line.productId === action.id ? { ...line, qty: line.qty - 1 } : line))
-          .filter((line) => line.qty > 0),
-      }
+      return { ...state, cart: decreaseQty(state.cart, action.id) }
     case 'remove':
-      return { ...state, cart: state.cart.filter((line) => line.productId !== action.id) }
+      return { ...state, cart: removeItem(state.cart, action.id) }
     case 'setCategory':
       return { ...state, category: action.category }
     case 'goTo':
@@ -98,11 +84,10 @@ export function OrderProvider({ children }) {
     [showToast],
   )
 
-  const value = useMemo(() => {
-    const cartTotal = state.cart.reduce((sum, line) => sum + line.unitPrice * line.qty, 0)
-    const itemCount = state.cart.reduce((sum, line) => sum + line.qty, 0)
-    return { state, ...actions, cartTotal, itemCount }
-  }, [state, actions])
+  const value = useMemo(
+    () => ({ state, ...actions, cartTotal: cartTotal(state.cart), itemCount: itemCount(state.cart) }),
+    [state, actions],
+  )
 
   return <OrderContext.Provider value={value}>{children}</OrderContext.Provider>
 }
