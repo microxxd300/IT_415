@@ -78,3 +78,18 @@
 **Verification:** `npm test` → 14 passed (6 money + 8 cart): acceptance 1 (9000 / 5000 / 3500, total 17500 = ₱175.00), acceptance 2 (Coffee 3 → 13500, total 22000; back to 2 → 17500), acceptance 3 (remove Soft Drink → 14000), same product twice → one line with qty 2, decrease from 1 → line removed and never negative, item count 4, empty cart → 0, original cart never changed. `npm run build` → OK.
 
 **Commit SHA:** fill in after committing
+
+### AI-M1-06 — Generation — Cheny — 2026-10-07
+**Step / branch:** Step 3, Part 2 — feature/frontend-ordering
+
+**Prompt:** "Part 2: ItemSelection + ProductCard + CartPanel: category tabs, large cards, tap to add, − qty +, Remove, subtotal, item count, total, empty state, Proceed disabled when empty, toasts." Follow-up typed: "go". Visual reference: the team's coffee-POS screenshot (product grid left, order panel right).
+
+**AI response summary:** The AI created ProductCard.jsx (the whole card is one large button with an icon, name, category, price and a quantity badge when the product is in the order), CartPanel.jsx ("Your Order" with item count, one line per product with unit price, − qty + buttons, Remove and subtotal, an empty state, the total, and "Proceed to Payment" disabled with "Add at least one item to continue." when the cart is empty), the real ItemSelection.jsx (All / Drinks / Food / Snacks tabs with counts, product grid, cart panel) and ordering.css. Toasts: "Product added — Coffee", "Coffee quantity: 3", "Coffee removed". During the browser check the AI found that with 3 or more lines the Total and Proceed button were pushed below the screen; it changed ordering.css so the selection screen fills exactly one screen and only the menu and the order list scroll.
+
+**Evaluation:** TODO
+
+**Changes we made:** TODO
+
+**Verification:** `npm test` → 14 passed; `npm run build` → OK. Browser (1280×800, backend running): empty cart → ₱0.00 and Proceed disabled with the hint; Coffee ×2 + Sandwich + Soft Drink → ₱90.00 / ₱50.00 / ₱35.00, Total ₱175.00, "4 items"; + Coffee → ₱135.00, Total ₱220.00, toast "Coffee quantity: 3"; − Coffee → Total ₱175.00; Remove Soft Drink → Total ₱140.00, toast "Soft Drink removed"; Drinks tab shows Coffee, Soft Drink, Bottled Water. At 420px wide the layout becomes one column. Known issue (not in this part's files): at phone width the step indicator in base.css is slightly too wide — for the Step 7 refactor.
+
+**Commit SHA:** fill in after committing
