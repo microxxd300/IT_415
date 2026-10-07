@@ -123,3 +123,70 @@ def test_each_transaction_gets_a_different_reference(client):
     assert first.endswith("-001")
     assert second.endswith("-002")
     assert transaction_count() == 2
+
+
+# ---------- GET /api/transactions/{reference} ----------
+
+
+def test_receipt_can_be_looked_up_by_reference(client):
+    created = pay(client, "cash", amount_paid=20000).json()
+
+    response = client.get(f"/api/transactions/{created['reference']}")
+
+    assert response.status_code == 200
+    assert response.json() == created
+
+
+def test_unknown_reference_returns_404(client):
+    response = client.get("/api/transactions/TXN-20260101-000000-999")
+
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Transaction not found."}
+
+
+# ---------- acceptance tests 4–7, end to end ----------
+
+
+def test_acceptance_4_insufficient_cash_gives_no_receipt(client):
+    response = pay(client, "cash", amount_paid=10000)
+
+    assert response.status_code == 400
+    assert "reference" not in response.json()
+    assert transaction_count() == 0
+
+
+def test_acceptance_5_cash_receipt_matches_the_payment(client):
+    reference = pay(client, "cash", amount_paid=20000).json()["reference"]
+
+    receipt = client.get(f"/api/transactions/{reference}").json()
+
+    assert [(line["name"], line["quantity"], line["subtotal"]) for line in receipt["items"]] == [
+        ("Coffee", 2, 9000),
+        ("Sandwich", 1, 5000),
+    ]
+    assert (receipt["total"], receipt["amount_paid"], receipt["change"]) == (14000, 20000, 6000)
+    assert receipt["payment_method_label"] == "Cash"
+    assert receipt["status"] == "Payment Successful"
+
+    exact = pay(client, "cash", amount_paid=14000).json()
+    assert exact["change"] == 0
+
+
+@pytest.mark.parametrize(("method", "label"), [("qr", "QR Payment"), ("card", "Credit/Debit Card")])
+def test_acceptance_6_qr_and_card_receipts(client, method, label):
+    reference = pay(client, method).json()["reference"]
+
+    receipt = client.get(f"/api/transactions/{reference}").json()
+
+    assert receipt["payment_method_label"] == label
+    assert receipt["amount_paid"] == receipt["total"] == 14000
+    assert receipt["change"] == 0
+
+
+def test_acceptance_7_two_transactions_have_their_own_receipts(client):
+    cash = pay(client, "cash", amount_paid=20000).json()
+    card = pay(client, "card", items=[{"product_id": SOFT_DRINK, "quantity": 1}]).json()
+
+    assert cash["reference"] != card["reference"]
+    assert client.get(f"/api/transactions/{cash['reference']}").json()["total"] == 14000
+    assert client.get(f"/api/transactions/{card['reference']}").json()["total"] == 3500
