@@ -30,19 +30,30 @@ function Kiosk() {
   const [status, setStatus] = useState('loading') // 'loading' | 'ready' | 'error'
   const [errorMessage, setErrorMessage] = useState('')
 
-  const loadProducts = useCallback(async () => {
-    setStatus('loading')
-    try {
-      setProducts(await getProducts())
-      setStatus('ready')
-    } catch (error) {
-      setErrorMessage(error.message)
-      setStatus('error')
-    }
-  }, [setProducts])
+  // isCurrent() is false once a newer load has started, so a late answer cannot overwrite it.
+  const loadProducts = useCallback(
+    async (isCurrent = () => true) => {
+      setStatus('loading')
+      try {
+        const products = await getProducts()
+        if (!isCurrent()) return
+        setProducts(products)
+        setStatus('ready')
+      } catch (error) {
+        if (!isCurrent()) return
+        setErrorMessage(error.message)
+        setStatus('error')
+      }
+    },
+    [setProducts],
+  )
 
   useEffect(() => {
-    loadProducts()
+    let current = true
+    loadProducts(() => current)
+    return () => {
+      current = false // React StrictMode runs effects twice in development; ignore the first load.
+    }
   }, [loadProducts])
 
   const Screen = SCREENS[state.screen]
@@ -56,7 +67,7 @@ function Kiosk() {
         {status === 'error' && (
           <div className="status-message status-error" role="alert">
             <p>{errorMessage}</p>
-            <button type="button" className="btn btn-primary" onClick={loadProducts}>
+            <button type="button" className="btn btn-primary" onClick={() => loadProducts()}>
               Try again
             </button>
           </div>
