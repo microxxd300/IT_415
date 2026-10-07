@@ -154,9 +154,9 @@
    AFTER: `formatPesoWhole(centavos)` in utils/money.js next to formatPeso, with the same "—" guard for invalid values + 1 test.
    Why better: all peso formatting lives in money.js and is tested; the screen only lays things out.
 
-**Evaluation:** TODO
+**Evaluation:** (Drafted with AI help at Cheny's request.) Correct: both helpers are now tested and the screens show exactly the same text as before (checked in the browser). Limitation: small gain — the duplicated code was only one line in two places.
 
-**Changes we made:** TODO
+**Changes we made:** None — accepted as generated.
 
 **Verification:** `npm test` → 28 passed after refactor 1, 29 passed after refactor 2; `npm run build` → OK. Browser: cart shows "0 items" → "1 item" → "3 items", Summary "3 items · Check everything before you pay.", Cash quick buttons "Exact", "₱200", "₱500", "₱1,000" — identical to before.
 
@@ -172,9 +172,9 @@ BEFORE: PaymentSuccess.jsx had its own `if (!transaction) { return <section>… 
 AFTER: one component, src/components/NoTransaction.jsx ("No completed payment" + New Transaction); PaymentSuccess does `if (!transaction) return <NoTransaction />`, Receipt does `if (!reference) return <NoTransaction />` after its hooks, and loadReceipt simply returns when there is no reference, so Try again is always meaningful.
 Why better: one wording, one place to change, and Receipt's loading code no longer mixes "no payment" with "server error". The only visible difference is the Receipt's fallback wording, which appears only through a bug (Proceed is disabled for an empty cart).
 
-**Evaluation:** TODO
+**Evaluation:** (Drafted with AI help at Cheny's request.) Correct: one fallback component instead of two copies, and Receipt's loading code is simpler. Limitation: the Receipt fallback wording changed slightly, but that screen only appears through a bug.
 
-**Changes we made:** TODO
+**Changes we made:** None — accepted as generated.
 
 **Verification:** `npm test` → 29 passed; `npm run build` → OK. Browser: Coffee ×2 + Sandwich, Cash ₱200 → Success ₱140.00 / ₱200.00 / ₱60.00 / Cash → Receipt Total ₱140.00, Cash, ₱200.00, ₱60.00 → New Transaction → Menu, ₱0.00 — same as before the refactor.
 
@@ -191,10 +191,10 @@ AFTER: the same rule is in base.css next to the other .btn styles, so any screen
 Why better: general button styles live in one file; screen CSS files only hold screen layout.
 Correction recorded: in Step 3 (AI-M1-06) the AI wrote that the step bar was too wide at phone width. Re-checked with a properly emulated 375-px phone screen: nothing overflows (page width = screen width). The earlier screenshot was wrong because the test browser window could not shrink below 486 px, so no change was made.
 
-**Evaluation:** TODO
+**Evaluation:** (Drafted with AI help at Cheny's request.) Correct: the general button style now lives with the other button styles, and the AI corrected its own earlier wrong claim about the step bar instead of 'fixing' something that was not broken. Limitation: the 99-per-product toast from CLAUDE.md section 7 was not added — skipped by the team because of the 9 pm deadline (the backend still rejects more than 99).
 
-**Changes we made:** TODO
+**Changes we made:** None to the code; we decided to skip the optional fixes (99 limit toast, keypad limit toast, receipt fallback) to meet the deadline.
 
 **Verification:** `npm test` → 29 passed; `npm run build` → OK. Browser: "Proceed to Payment" is still full width (352 px = the order panel's width). Phone emulation 375×812: no element wider than the screen.
 
-**Commit SHA:** fill in after committing
+**Commit SHA:** 92b951f
