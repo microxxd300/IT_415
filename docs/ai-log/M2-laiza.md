@@ -145,7 +145,7 @@
 6. New Transaction → empty cart, ₱0.00, toast. Repeat the order with QR (Confirm Payment) and with Card (Processing payment… 2 s) → paid ₱140.00, change ₱0.00.
 7. Compare the transaction numbers of two receipts: they are different.
 
-**Commit SHA:** fill in after committing
+**Commit SHA:** f9aa43a
 
 ### AI-M2-10 — Review — Laiza — 2026-10-07
 **Step / branch:** Review of PR #7 refactor/frontend-cleanup (Step 7, author M1 Cheny)
@@ -160,7 +160,7 @@
 
 **Verification:** Approved and merged PR #7 as 3bed708.
 
-**Commit SHA:** fill in after committing
+**Commit SHA:** f9aa43a
 
 ### AI-M2-11 — Generation — Laiza — 2026-10-07
 **Step / branch:** Step 8 — docs/readme
@@ -171,8 +171,8 @@
 
 **Evaluation:** (Drafted with AI help.) Correct: the numbers in the README (55 backend tests, 29 frontend tests, merge SHAs, reviewers) were taken from the real repository. Limitation: PR #8's merge commit is not known until it is merged, so the table says "this PR".
 
-**Changes we made:** None — accepted as generated.
+**Changes we made:** After Kurt's review, corrected the sentence that said all 7 acceptance tests are automated: the calculations and API are automated, but Back keeping the cart and the empty cart after New Transaction are checked by hand.
 
 **Verification:** `npm test` → 29 passed; links to the three AI logs checked against the file names.
 
-**Commit SHA:** fill in after committing
+**Commit SHA:** f9aa43a

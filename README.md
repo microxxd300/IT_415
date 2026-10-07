@@ -108,7 +108,9 @@ payment_method_label, amount_paid, change, status`.
 | 6 | QR and Card | Succeed, correct method, paid = total, change ₱0.00 |
 | 7 | New Transaction; two transactions | Empty cart, ₱0.00; different transaction numbers |
 
-All 7 are covered by automated tests (backend `tests/test_transactions.py`, frontend `utils/*.test.js`) and were checked in the browser.
+All 7 were checked in the browser. The calculations and API behind them are also covered by automated tests
+(backend `tests/test_pricing.py` and `tests/test_transactions.py`, frontend `utils/cart.test.js` and `utils/payment.test.js`);
+the screen behaviour (Back keeps the cart, empty cart after New Transaction) is checked by hand.
 
 ### Demo checklist
 1. Start the backend and the frontend, open http://localhost:5173.
