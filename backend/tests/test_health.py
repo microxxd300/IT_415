@@ -2,7 +2,7 @@ import pytest
 from fastapi.exceptions import RequestValidationError
 from fastapi.testclient import TestClient
 
-from app.main import app, validation_message
+from app.main import LOCAL_ORIGINS, allowed_origins, app, validation_message
 
 client = TestClient(app)
 
@@ -50,6 +50,18 @@ def test_cors_rejects_other_origins():
     )
 
     assert "access-control-allow-origin" not in response.headers
+
+
+def test_only_local_origins_by_default(monkeypatch):
+    monkeypatch.delenv("KIOSK_ALLOWED_ORIGINS", raising=False)
+
+    assert allowed_origins() == LOCAL_ORIGINS
+
+
+def test_deployed_frontends_come_from_the_environment(monkeypatch):
+    monkeypatch.setenv("KIOSK_ALLOWED_ORIGINS", " https://campus-kiosk.vercel.app/ , https://example.org ")
+
+    assert allowed_origins() == LOCAL_ORIGINS + ["https://campus-kiosk.vercel.app", "https://example.org"]
 
 
 def test_server_error_returns_detail_with_cors_header(crashing_client):

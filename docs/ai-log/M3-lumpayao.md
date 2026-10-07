@@ -150,7 +150,7 @@
 
 **Verification:** PR #8 approved by microxxd300 and merged as f28c07f.
 
-**Commit SHA:** fill in after committing
+**Commit SHA:** 23f5a44
 
 ### AI-M3-11 — Review — Lumpayao — 2026-10-07
 **Step / branch:** Step 9 — final check on main (read-only)
@@ -164,5 +164,20 @@
 **Changes we made:** None to the app — Step 9 is read-only; this log entry is added in a separate small PR.
 
 **Verification:** Results above; final SHA f28c07f3176a627a4e5df0afcb923a89ee292d0d.
+
+**Commit SHA:** 23f5a44
+
+### AI-M3-12 — Generation — Lumpayao — 2026-10-07
+**Step / branch:** Extra after Step 9 — feature/deploy-cors
+
+**Prompt:** "now i need to deploy this on vercel guide me"
+
+**AI response summary:** The AI explained that the backend keeps transactions in memory, so Vercel's short-lived Python functions could save a payment in one instance and look up the receipt in another ("Transaction not found."). It recommended the frontend on Vercel and the backend on Render (one long-running process). To let the deployed frontend call the API, main.py now builds the CORS list from the two local Vite addresses plus any URLs in the environment variable KIOSK_ALLOWED_ORIGINS (comma-separated, trailing "/" removed). 2 tests added.
+
+**Evaluation:** (Drafted with AI help at Kurt's request.) Correct: no deployed URL is hard-coded, local development is unchanged, and the in-memory limitation was explained before choosing a host. Limitation: Render's free plan sleeps after inactivity, so the first request can take up to about a minute and in-memory receipts are lost when it sleeps.
+
+**Changes we made:** None — accepted as generated.
+
+**Verification:** `pytest` → 57 passed (2 new: only local origins by default; extra origins read from KIOSK_ALLOWED_ORIGINS).
 
 **Commit SHA:** fill in after committing

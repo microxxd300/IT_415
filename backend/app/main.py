@@ -1,5 +1,7 @@
 """FastAPI application for the Campus Store touchscreen POS kiosk."""
 
+import os
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,8 +10,16 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.routers import products, transactions
 
-# The Vite dev server can be opened with either host name.
-ALLOWED_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
+LOCAL_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]  # the Vite dev server
+
+
+def allowed_origins() -> list[str]:
+    """Local dev server plus deployed frontends from KIOSK_ALLOWED_ORIGINS (comma-separated URLs)."""
+    extra = os.environ.get("KIOSK_ALLOWED_ORIGINS", "")
+    return LOCAL_ORIGINS + [origin.strip().rstrip("/") for origin in extra.split(",") if origin.strip()]
+
+
+ALLOWED_ORIGINS = allowed_origins()
 
 # Customer-friendly messages for invalid fields; the kiosk shows "detail" as it is.
 FIELD_MESSAGES = {
