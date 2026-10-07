@@ -52,9 +52,9 @@
 
 **AI response summary:** The AI created src/utils/payment.js: pressKey(entry, key) builds the keypad entry from digit keys, 'clear' and 'back', drops leading zeros and never goes above ₱100,000 (the cash limit suggested in my PR #4 review); entryToCentavos("200") → 20000 (null when empty); checkCash(paid, total) returns ok or the same sentence as the backend ("Insufficient payment. Please enter at least ₱140.00. You are short by ₱40.00.", or "Please enter the amount paid." when empty); changeFor(paid, total) returns paid − total, or null while the amount is not enough. payment.test.js has 11 tests.
 
-**Evaluation:** TODO
+**Evaluation:** (Drafted with AI help at Laiza's request.) Correct: checkCash uses the exact sentence and the same centavo rule as the backend, so the customer sees the same message whether the kiosk or the server catches it; the keypad cannot produce leading zeros, non-digits or more than ₱100,000. Limitation: the keypad only enters whole pesos, so a customer cannot pay ₱140.50 — fine here because every price is a whole peso.
 
-**Changes we made:** TODO
+**Changes we made:** None — accepted as generated.
 
 **Verification:** `npm test` → 25 passed (6 money + 8 cart + 11 payment): "2","0","0" → "200" → 20000 centavos; "0","5" → "5"; back and clear; non-digits ignored; stops at 100000; ₱100 on ₱140 → exact backend sentence; empty → "Please enter the amount paid."; ₱200 on ₱140 → change 6000; exact → 0; not enough → no change shown.
 
@@ -67,9 +67,9 @@
 
 **AI response summary:** The AI created Keypad.jsx (1–9, Clear, 0, ⌫ in a 3×4 grid of large keys, with spoken labels for screen readers), the real CashPayment.jsx (Total due, large Amount paid display, one feedback panel that shows "Change ₱60.00" in green, "Short by ₱40.00" in red, or the error after Pay Now; quick amounts Exact / ₱200 / ₱500 / ₱1,000 with amounts below the total disabled; Pay Now checks with checkCash first, then calls createTransaction, shows "Processing…" and disables every button while the request runs; on success setTransaction + toast "Transaction completed successfully" + Payment Successful screen; on any error it shows the message and stays) and payment.css. It also added buildPaymentRequest(cart, method, amountPaid) to payment.js (only ids and quantities are sent; the server sets prices) with 2 tests, so the QR and Card screens can reuse it. After the first browser test the error message was moved into the feedback panel because a separate box pushed Pay Now below the screen.
 
-**Evaluation:** TODO
+**Evaluation:** (Drafted with AI help at Laiza's request.) Correct: acceptance 4 and 5 work in the browser (₱100 rejected and the customer stays, ₱200 → ₱60 change), and the AI proved there is no double payment by slowing the network and counting 0 enabled buttons. Problem found while testing: the separate error box pushed Pay Now below the screen; the AI moved the message into the change panel. Limitation: the same message appears twice for a moment (panel and toast).
 
-**Changes we made:** TODO
+**Changes we made:** None to the code; we accepted the layout fix after the browser test.
 
 **Verification:** `npm test` → 27 passed; `npm run build` → OK. Browser (backend running), Coffee ×2 + Sandwich = ₱140.00 → Cash: keypad 1-0-0 → Pay Now → stays on Cash with "Insufficient payment. Please enter at least ₱140.00. You are short by ₱40.00." (acceptance 4); Clear, 2-0-0 → "Change ₱60.00" → Pay Now → Payment Successful with toast "Transaction completed successfully" (acceptance 5). Exact → paid. With the network slowed by 1 s: button reads "Processing…" and 0 buttons are enabled. With a simulated 400 from the server: stays on Cash, shows the server message, Pay Now enabled again.
 
@@ -82,10 +82,10 @@
 
 **AI response summary:** The AI moved the "send the payment" logic into a new hook, src/hooks/usePayment.js (Processing state that disables every button, success → setTransaction + toast "Transaction completed successfully" + Payment Successful, error → message shown and stay on the screen), and switched CashPayment to it so the logic exists once. QrPayment.jsx shows the amount, a clearly labelled sample QR drawn as an SVG ("Sample QR · simulated" — it encodes nothing), 3 numbered steps starting with "Scan the QR code using your supported payment application.", Back and Confirm Payment. CardPayment.jsx shows the amount, a card graphic, "Please tap, insert, or swipe your card.", and Process Payment → "Processing payment…" with a spinner for 2 s and all buttons disabled, then the payment is sent. QR and card send no amount_paid; the server sets paid = total.
 
-**Evaluation:** TODO
+**Evaluation:** (Drafted with AI help at Laiza's request.) Correct: QR and card receipts come back from the real backend with paid = total and ₱0.00 change (acceptance 6), and moving the payment logic into usePayment removed the copy in CashPayment — Cash was re-tested afterwards. Limitations: the QR image is a sample that encodes nothing and the card wait is a fixed 2 s, both allowed because real payment integration is not required; usePayment.js is a new file that was not in the CLAUDE.md ownership table (it is mine, created on my branch).
 
-**Changes we made:** TODO
+**Changes we made:** None to the code; we accepted the smaller QR box after the browser showed the buttons slightly below the screen.
 
 **Verification:** `npm test` → 27 passed; `npm run build` → OK. Browser on a ₱140.00 order (responses captured from the real backend): QR → Payment Successful, TXN-20261007-142912-004, QR Payment, total 14000, paid 14000, change 0; Card → "Processing payment…" with 0 enabled buttons, then Payment Successful, TXN-20261007-142916-005, Credit/Debit Card, paid 14000, change 0 (acceptance 6). Cash re-tested after the refactor: ₱100 → stays with the insufficient message and no request sent; ₱200 → paid 20000, change 6000, Cash. Confirm Payment fits on a 674-px-tall window.
 
-**Commit SHA:** fill in after committing
+**Commit SHA:** e9026f4
