@@ -69,10 +69,25 @@
 
 **AI response summary:** Error: a route that raises an exception returned 500 {"detail": "..."} but with no access-control-allow-origin header. Root cause: Starlette sends 500 responses from its outermost error layer, which sits outside CORSMiddleware, so CORS headers are never added to them. Fix: unexpected_error_handler now copies the request's Origin into Access-Control-Allow-Origin (plus Vary: Origin) when it is one of ALLOWED_ORIGINS. Tests: a fixture temporarily adds a route that always crashes; one test checks the 500 detail and CORS header for http://localhost:5173, one checks no header for another origin.
 
-**Evaluation:** (Drafted with AI help at Kurt's request.) Correct: the root cause matches what we saw (header missing only on 500 responses) and the fix is small and only allows our two origins. Limitation: the header is added by hand, so if ALLOWED_ORIGINS changes, both CORS places still use the same list (good), but other CORS options such as credentials are not copied.
+**Evaluation:** (Drafted with AI help at Kurt's request.) Correct: the root cause matches what we saw (header missing only on 500 responses) and the fix is small and only allows our two origins. Limitation: the header is added by hand, so only Access-Control-Allow-Origin is copied — other CORS options (such as credentials) are not; both places do use the same ALLOWED_ORIGINS list.
 
 **Changes we made:** None — accepted as generated.
 
 **Verification:** Before the fix (review experiment): 500 response, access-control-allow-origin = None. After: `pytest` → 12 passed, including test_server_error_returns_detail_with_cors_header and test_server_error_has_no_cors_header_for_other_origins.
+
+**Commit SHA:** e6e2f66
+
+### AI-M3-06 — Generation — Lumpayao — 2026-10-07
+**Step / branch:** Step 1, fix review on PR feature/backend-products (reviewer: Cheny)
+
+**Prompt:** Cheny's review comment: "backend/requirements.txt: please pin the versions we tested with (fastapi==0.142.2, uvicorn[standard]==0.54.0, pydantic==2.13.5, pytest==9.1.1, httpx==0.28.1) so a new release can't break the demo."
+
+**AI response summary:** The AI replaced the open-ended `>=` versions with the exact versions installed in our .venv and used by every test run so far.
+
+**Evaluation:** (Drafted with AI help at Kurt's request.) Correct: a fresh `pip install` now gets exactly what we tested, so a new release cannot change behaviour before the demo. Limitation: sub-dependencies (e.g. starlette) are not pinned, only the five packages we list; security updates now have to be applied by hand.
+
+**Changes we made:** None — accepted as generated.
+
+**Verification:** `pip install -r requirements.txt` → nothing to change; `pip check` → "No broken requirements found."; `pytest` → 12 passed.
 
 **Commit SHA:** fill in after committing
