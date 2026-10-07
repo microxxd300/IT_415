@@ -89,3 +89,18 @@
 **Verification:** `npm test` → 27 passed; `npm run build` → OK. Browser on a ₱140.00 order (responses captured from the real backend): QR → Payment Successful, TXN-20261007-142912-004, QR Payment, total 14000, paid 14000, change 0; Card → "Processing payment…" with 0 enabled buttons, then Payment Successful, TXN-20261007-142916-005, Credit/Debit Card, paid 14000, change 0 (acceptance 6). Cash re-tested after the refactor: ₱100 → stays with the insufficient message and no request sent; ₱200 → paid 20000, change 6000, Cash. Confirm Payment fits on a 674-px-tall window.
 
 **Commit SHA:** e9026f4
+
+### AI-M2-07 — Generation — Laiza — 2026-10-07
+**Step / branch:** Step 6, Part 1 — feature/frontend-receipt
+
+**Prompt:** "Part 1: PaymentSuccess screen (all fields + View Receipt + success toast)." Follow-up typed: "go".
+
+**AI response summary:** The AI built PaymentSuccess.jsx: a green check mark beside "Payment Successful", the transaction number in a highlighted box, then Transaction amount, Amount paid, Change and Payment method — all read from the receipt the server returned (state.transaction), nothing recalculated on the kiosk — and a View Receipt button. The success toast "Transaction completed successfully" is already shown by usePayment when the screen opens, so it is not shown twice. If there is no transaction (for example the screen is reached by mistake), it shows "No completed payment" with a New Transaction button. Styles are in the new receipt.css. After the browser check the check mark was moved beside the title because View Receipt was below the screen.
+
+**Evaluation:** TODO
+
+**Changes we made:** TODO
+
+**Verification:** `npm test` → 27 passed; `npm run build` → OK. Browser: Coffee ×2 + Sandwich, Cash ₱200 → Payment Successful: TXN-20261007-144742-007, Transaction amount ₱140.00, Amount paid ₱200.00, Change ₱60.00, Payment method Cash, toast "Transaction completed successfully"; View Receipt fits on a 674-px-tall window.
+
+**Commit SHA:** fill in after committing
