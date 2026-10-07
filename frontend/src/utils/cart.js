@@ -35,3 +35,8 @@ export function cartTotal(cart) {
 export function itemCount(cart) {
   return cart.reduce((sum, line) => sum + line.qty, 0)
 }
+
+// "1 item", "3 items"
+export function formatItemCount(count) {
+  return `${count} ${count === 1 ? 'item' : 'items'}`
+}

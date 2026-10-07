@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { addItem, cartTotal, decreaseQty, increaseQty, itemCount, lineSubtotal, removeItem } from './cart.js'
+import {
+  addItem,
+  cartTotal,
+  decreaseQty,
+  formatItemCount,
+  increaseQty,
+  itemCount,
+  lineSubtotal,
+  removeItem,
+} from './cart.js'
 
 // Same products and centavo prices as the backend.
 const COFFEE = { id: 1, name: 'Coffee', price: 4500, category: 'Drinks' }
@@ -64,6 +73,12 @@ describe('cart rules', () => {
 
   it('counts items by quantity', () => {
     expect(itemCount(sampleOrder())).toBe(4)
+  })
+
+  it('writes the item count as "1 item" or "n items"', () => {
+    expect(formatItemCount(0)).toBe('0 items')
+    expect(formatItemCount(1)).toBe('1 item')
+    expect(formatItemCount(4)).toBe('4 items')
   })
 
   it('an empty cart totals ₱0.00 with 0 items', () => {

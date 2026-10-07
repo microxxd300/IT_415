@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatPeso } from './money.js'
+import { formatPeso, formatPesoWhole } from './money.js'
 
 describe('formatPeso', () => {
   it('formats zero as ₱0.00', () => {
@@ -22,6 +22,12 @@ describe('formatPeso', () => {
 
   it('puts the minus sign before the peso sign', () => {
     expect(formatPeso(-2500)).toBe('-₱25.00')
+  })
+
+  it('formats whole-peso button labels without centavos', () => {
+    expect(formatPesoWhole(20000)).toBe('₱200')
+    expect(formatPesoWhole(100000)).toBe('₱1,000')
+    expect(formatPesoWhole(undefined)).toBe('—')
   })
 
   it('shows a dash instead of NaN for missing or invalid amounts', () => {

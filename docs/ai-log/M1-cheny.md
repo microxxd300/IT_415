@@ -108,3 +108,56 @@
 **Verification:** `npm test` → 14 passed; `npm run build` → OK. Browser: Coffee ×2 + Sandwich → Order Summary shows Coffee 2 × ₱45.00 = ₱90.00, Sandwich 1 × ₱50.00 = ₱50.00, Total ₱140.00, "3 items"; "← Back" → Item Selection still has Coffee ×2 and Sandwich, Total ₱140.00; Continue → Payment Method shows Amount due ₱140.00 and the three tiles, all on one screen; Cash → Cash placeholder with toast "Cash selected".
 
 **Commit SHA:** 507e075
+
+### AI-M1-08 — Review — Cheny — 2026-10-07
+**Step / branch:** Review of PR #5 feature/frontend-payment (Step 5, author M2 Laiza)
+
+**Prompt:** "review feature/frontend-payment as Cheny" (started after Laiza typed "done")
+
+**AI response summary:** The AI checked PR #5 (9 files) against the API contract, ownership, centavo math, the payment rules in CLAUDE.md section 7 and the acceptance tests. Verdict: Approve. Suggestions: (1) LOW — no feedback when the keypad reaches ₱100,000; (2) LOW — a timeout after the server already saved could lead a customer to pay twice; add a README note; (3) NOTE — add hooks/usePayment.js to the CLAUDE.md ownership table; (4) NIT — aria-live on the amount display announces every key press.
+
+**Evaluation:** (Drafted with AI help at Cheny's request.) Correct: acceptance 4–6 and the "no double payment" rule had already been proven in the browser against the real backend, so approving was safe; suggestion 2 connects to the timeout limitation I found in my own AI-M1-04. Limitation: the review did not re-run the browser checks itself — it relied on the checks recorded during Laiza's build.
+
+**Changes we made:** Posted an Approve review in my own summary: "Works end to end: ₱100 on ₱140 is rejected and stays, ₱200 gives ₱60 change, QR and card pay ₱140 with ₱0 change, and buttons are disabled while paying. Small suggestions: a toast when the keypad hits ₱100,000, and a README note to check with staff before retrying after a payment error." Items 3 and 4 were left for Kurt (CLAUDE.md) and the Step 7 refactor.
+
+**Verification:** Approved and merged PR #5 as f0e42e2.
+
+**Commit SHA:** fill in after committing
+
+### AI-M1-09 — Review — Cheny — 2026-10-07
+**Step / branch:** Review of PR #6 feature/frontend-receipt (Step 6, author M2 Laiza)
+
+**Prompt:** "review feature/frontend-receipt as Cheny" (started after Laiza typed "done")
+
+**AI response summary:** The AI checked PR #6 (4 files) against the receipt fields in CLAUDE.md section 7, ownership, centavo math and acceptance 5–7. Verdict: Approve. Suggestions: (1) LOW — if the backend restarts between paying and View Receipt, the lookup returns "Transaction not found." although the kiosk still has the receipt in memory; fall back to it; (2) LOW — the "no transaction → New Transaction" block is duplicated in PaymentSuccess and Receipt, for the Step 7 refactor; (3) NOTE — put the AI-M2-09 demo checklist in the README.
+
+**Evaluation:** (Drafted with AI help at Cheny's request.) Correct: suggestion 1 is a real gap caused by our no-database decision, and suggestion 2 gives me a concrete task for Step 7. Limitation: the review relied on the browser checks recorded during Laiza's build instead of repeating them.
+
+**Changes we made:** Posted an Approve review in my own summary: "Receipt matches the payment (₱140 / ₱200 / ₱60 / Cash; QR and card ₱0 change), New Transaction clears everything and references differ. Suggestions: fall back to the in-memory receipt if the server restarted, and the duplicated "no transaction" block can go in the Step 7 cleanup."
+
+**Verification:** Approved and merged PR #6 as 790f384.
+
+**Commit SHA:** fill in after committing
+
+### AI-M1-10 — Refactoring — Cheny — 2026-10-07
+**Step / branch:** Step 7, Part 1 — refactor/frontend-cleanup
+
+**Prompt:** "Run npm test first and report the result. One part per refactor (duplicated logic, unclear names, oversized components, calculations that belong in src/utils/). Show BEFORE/AFTER snippets and why each is better. Behavior must not change; npm test after each part." Follow-up typed: "ready", then "go" (Part 1: text and money formatting belong in src/utils/).
+
+**AI response summary:** Baseline before any change: `npm test` → 27 passed (3 files), build OK. Two refactors:
+1. Duplicated "item/items" text.
+   BEFORE (CartPanel.jsx and OrderSummary.jsx): `{itemCount} {itemCount === 1 ? 'item' : 'items'}`
+   AFTER: `formatItemCount(itemCount)` from utils/cart.js (`` `${count} ${count === 1 ? 'item' : 'items'}` ``) + 1 test.
+   Why better: one place to change the wording, and it is tested.
+2. Money formatting hidden inside a screen.
+   BEFORE (CashPayment.jsx): a local `function shortPeso(centavos) { return `₱${(centavos / 100).toLocaleString('en-US')}` }`
+   AFTER: `formatPesoWhole(centavos)` in utils/money.js next to formatPeso, with the same "—" guard for invalid values + 1 test.
+   Why better: all peso formatting lives in money.js and is tested; the screen only lays things out.
+
+**Evaluation:** TODO
+
+**Changes we made:** TODO
+
+**Verification:** `npm test` → 28 passed after refactor 1, 29 passed after refactor 2; `npm run build` → OK. Browser: cart shows "0 items" → "1 item" → "3 items", Summary "3 items · Check everything before you pay.", Cash quick buttons "Exact", "₱200", "₱500", "₱1,000" — identical to before.
+
+**Commit SHA:** fill in after committing

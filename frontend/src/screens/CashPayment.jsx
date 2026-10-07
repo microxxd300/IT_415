@@ -2,15 +2,11 @@ import { useState } from 'react'
 import Keypad from '../components/Keypad.jsx'
 import { usePayment } from '../hooks/usePayment.js'
 import { useOrder } from '../state/OrderContext.jsx'
-import { formatPeso } from '../utils/money.js'
+import { formatPeso, formatPesoWhole } from '../utils/money.js'
 import { changeFor, checkCash, entryToCentavos, pressKey } from '../utils/payment.js'
 import '../styles/payment.css'
 
 const QUICK_AMOUNTS = [20000, 50000, 100000] // ₱200, ₱500, ₱1,000
-
-function shortPeso(centavos) {
-  return `₱${(centavos / 100).toLocaleString('en-US')}`
-}
 
 export default function CashPayment() {
   const { cartTotal, goTo } = useOrder()
@@ -97,7 +93,7 @@ export default function CashPayment() {
                 onClick={() => chooseAmount(amount)}
                 disabled={isPaying || amount < cartTotal}
               >
-                {shortPeso(amount)}
+                {formatPesoWhole(amount)}
               </button>
             ))}
           </div>
