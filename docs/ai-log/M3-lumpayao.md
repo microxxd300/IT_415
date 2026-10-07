@@ -90,4 +90,49 @@
 
 **Verification:** `pip install -r requirements.txt` → nothing to change; `pip check` → "No broken requirements found."; `pytest` → 12 passed.
 
+**Commit SHA:** 5cf0711
+
+### AI-M3-07 — Generation — Lumpayao — 2026-10-07
+**Step / branch:** Step 4, Part 1 — feature/backend-transactions
+
+**Prompt:** "Part 1: services/pricing.py + tests/test_pricing.py (175 → 220 → 140; ₱100 on ₱140 rejected with the exact message; ₱200 → ₱60; exact → 0)." Follow-up typed: "go". Kurt asked the AI to create the branch and run the git commands for this step.
+
+**AI response summary:** The AI created backend/app/services/pricing.py with pure functions on integer centavos: format_peso (4500 → "₱45.00", with thousands separators), build_lines (prices every requested item from the server's own product list, rejects unknown products, merges the same product requested twice into one line, and rejects more than 99 of one product — the limit Laiza suggested in the PR #3 review), calculate_total, validate_cash (raises "Insufficient payment. Please enter at least ₱140.00. You are short by ₱40.00.") and compute_change. tests/test_pricing.py has 16 tests. It also updated CLAUDE.md: Cheny's real username hchenii, setProducts in the frontend contract, and the 99-per-product limit.
+
+**Evaluation:** (Drafted with AI help at Kurt's request.) Correct: the tests use the instructor's exact numbers (₱175 → ₱220 → ₱140, ₱100 on ₱140 rejected with the exact sentence, ₱200 → ₱60, exact → ₱0.00) plus a one-centavo-short edge case. Prices come only from the server's list, so a client cannot send its own price. Limitation: the functions do not check that quantities are at least 1 or that amounts are not negative — that is left to the Pydantic schema in Part 2, so pricing.py must not be called with unvalidated input.
+
+**Changes we made:** None — accepted as generated.
+
+**Verification:** `pytest` → 28 passed (12 existing + 16 new pricing tests).
+
+**Commit SHA:** 59aa5f5
+
+### AI-M3-08 — Generation — Lumpayao — 2026-10-07
+**Step / branch:** Step 4, Part 2 — feature/backend-transactions
+
+**Prompt:** "Part 2: POST /api/transactions per section 4 (Pydantic validation, server-side prices, cash validation, qr/card paid = total, validate everything before saving, save the transaction in memory under a lock, reference from date + time + counter, nothing saved on rejection)." Follow-up typed: "go".
+
+**AI response summary:** The AI added TransactionRequest, OrderItem, Receipt and ReceiptLine to schemas.py (StrictInt so "2", 2.5 or true are rejected instead of converted; quantity 1–99; method cash/qr/card; cash needs an amount_paid of 0 or more; extra fields such as a client "price" are ignored). store.py got PRODUCTS_BY_ID plus an in-memory transactions dict and counter protected by a thread lock. services/transactions.py create_transaction prices the order with pricing.py, validates cash, and only then makes the reference (TXN-YYYYMMDD-HHMMSS-NNN) and saves; QR/card pay exactly the total with ₱0.00 change. routers/transactions.py returns 201, 400 for insufficient cash and 422 for invalid orders. main.py now gives customer-friendly 422 messages for known fields (Cheny's PR #1 suggestion), e.g. "Quantity must be between 1 and 99." conftest.py clears the transactions before every test.
+
+**Evaluation:** (Drafted with AI help at Kurt's request.) Correct: every acceptance case for payments is covered by tests (₱200 → ₱60, exact → ₱0, QR/card paid = total, ₱100 on ₱140 → 400 with the exact sentence) and every rejected request leaves 0 saved transactions. Client prices are proven to be ignored. Limitations: transactions disappear when the server restarts (team decision: no database); the friendly message map shows only the first error and uses one sentence per field, so a missing "items" and an empty "items" get the same message.
+
+**Changes we made:** None — accepted as generated.
+
+**Verification:** `pytest` → 48 passed (20 new transaction tests). Live server: POST Coffee ×2 + Sandwich, cash 20000 → 201, TXN-20261007-141258-001, total 14000, paid 20000, change 6000, "Cash"; cash 10000 → 400 "Insufficient payment. Please enter at least ₱140.00. You are short by ₱40.00."
+
+**Commit SHA:** 5a7b613
+
+### AI-M3-09 — Generation — Lumpayao — 2026-10-07
+**Step / branch:** Step 4, Part 3 — feature/backend-transactions
+
+**Prompt:** "Part 3: GET /api/transactions/{reference} + tests/test_transactions.py for acceptance 4–7 (different references; a rejected payment saves nothing)." Follow-up typed: "next", then "go".
+
+**AI response summary:** The AI added GET /api/transactions/{reference} (200 with the saved receipt, 404 "Transaction not found.") and 7 tests: lookup returns exactly the receipt from the payment, unknown reference → 404, and an end-to-end replay of acceptance 4 (₱100 on ₱140 → 400, no reference, nothing saved), 5 (cash ₱200 → receipt Coffee 2 / Sandwich 1, ₱140 / ₱200 / ₱60 / Cash; exact cash → ₱0), 6 (QR and card receipts: paid = total, change ₱0, correct label) and 7 (two transactions have different references and each lookup returns its own total).
+
+**Evaluation:** (Drafted with AI help at Kurt's request.) Correct: the acceptance tests now run against the real API, including looking the receipt up again, so the receipt the frontend shows in Step 6 is proven to match the payment. The live check also showed why the reference has a date and time: uvicorn reloaded, the counter restarted at 001, and the reference was still new. Limitation: receipts can only be looked up until the server restarts.
+
+**Changes we made:** None — accepted as generated.
+
+**Verification:** `pytest` → 55 passed. Live server: card payment for 1 Soft Drink → GET TXN-20261007-141430-001 → total 3500, paid 3500, change 0, "Credit/Debit Card".
+
 **Commit SHA:** fill in after committing

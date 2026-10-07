@@ -5,13 +5,14 @@ Project instructions: sections 0–11 of the team's master prompt, verbatim.
 ## 0. Team configuration
 | ID | Member | Full name | GitHub username | Commit email | Git remote | Works in |
 |----|--------|-----------|-----------------|--------------|------------|----------|
-| M1 | Cheny | Cheny Dalugdog | hcheniii | chenybabesdalogdug@gmail.com | cheny | C:\Projects\IT_415_frontend |
+| M1 | Cheny | Cheny Dalugdog | hchenii | chenybabesdalogdug@gmail.com | cheny | C:\Projects\IT_415_frontend |
 | M2 | Laiza | Laiza Pueblo | pueblolaiza | pueblo.laiza@dnsc.edu.ph | laiza | C:\Projects\IT_415_frontend |
 | M3 | Lumpayao | Kurt Lumpayao | microxxd300 | lumpayao.kurt@dnsc.edu.ph | origin | C:\Projects\IT_415_backend |
 - Repository: https://github.com/microxxd300/IT_415 (owner: microxxd300) — integration branch: main.
 - Remotes: in C:\Projects\IT_415_backend, origin = https://microxxd300@github.com/microxxd300/IT_415.git.
   In C:\Projects\IT_415_frontend, origin = https://github.com/microxxd300/IT_415.git (used only for pulling),
   cheny = https://hcheniii@github.com/microxxd300/IT_415.git, laiza = https://pueblolaiza@github.com/microxxd300/IT_415.git.
+  (Cheny's real GitHub username is hchenii; the extra "i" in the cheny remote URL is harmless — Git Credential Manager signs in as hchenii.)
 - Both folders are clones of the SAME repository (monorepo with backend/ and frontend/).
   Backend work happens ONLY in C:\Projects\IT_415_backend\backend. Frontend work happens ONLY in C:\Projects\IT_415_frontend\frontend.
 - Work split: Cheny and Laiza share the UI equally (3 PRs each). Lumpayao does the backend.
@@ -49,7 +50,7 @@ Every error response is {"detail": "<one human-readable sentence>"} — validati
   amount_paid is required for cash and ignored for qr/card (for those, amount_paid = total and change = 0).
   201 → Receipt
   400 → insufficient cash: "Insufficient payment. Please enter at least ₱140.00. You are short by ₱40.00."
-  422 → empty items, unknown product, quantity < 1, missing/invalid/negative amount_paid for cash, invalid method.
+  422 → empty items, unknown product, quantity < 1 or more than 99 per product, missing/invalid/negative amount_paid for cash, invalid method.
   The server recomputes every price and total from its own product list and never trusts client prices. A rejected payment saves NOTHING.
 - GET /api/transactions/{reference} → 200 Receipt | 404 "Transaction not found."
 - Receipt = {"reference": "TXN-20261007-143015-001", "created_at": ISO datetime, "items": [{"product_id", "name", "unit_price", "quantity", "subtotal"}], "total",
@@ -83,7 +84,8 @@ Contract:
   a network failure throws ApiError("Cannot reach the server. Please ask staff for help.", 0).
 - utils/money.js: formatPeso(centavos) → "₱1,234.00"
 - state/OrderContext.jsx exposes useOrder() → { state: { screen, category, products, cart: [{productId, name, unitPrice, qty}], transaction },
-  addItem(product), increase(id), decrease(id), remove(id), setCategory(c), goTo(screen), setTransaction(receipt), newTransaction(), cartTotal, itemCount }
+  addItem(product), increase(id), decrease(id), remove(id), setCategory(c), goTo(screen), setTransaction(receipt), newTransaction(), cartTotal, itemCount,
+  setProducts(products) (added in Step 2 so App can store the loaded products) }
   and useToast() → showToast(message, type: 'info' | 'success' | 'error').
 - Screens: 'selection', 'summary', 'method', 'cash', 'qr', 'card', 'success', 'receipt'.
 - newTransaction(): clears cart, transaction and category; goes to 'selection'; toast "New transaction started — previous order cleared". Products stay loaded.
@@ -91,6 +93,7 @@ Contract:
 ## 7. Business rules and touchscreen UI
 - Products (hard-coded in the backend): Coffee ₱45 Drinks, Sandwich ₱50 Food, Soft Drink ₱35 Drinks, Cookies ₱25 Snacks, Bottled Water ₱20 Drinks, Chocolate ₱25 Snacks. Category tabs: All / Drinks / Food / Snacks.
 - Subtotal = unit price × qty; Total = sum of subtotals. Quantity never goes below 0; decreasing from 1 removes the line; every line has a Remove button.
+  Maximum 99 per product (review suggestion on PR #3): the backend rejects more; the frontend should stop at 99 with a toast (Step 7).
 - "Proceed to Payment" is disabled when the cart is empty, with an explanation. Back from Order Summary keeps the cart.
 - Cash: on-screen keypad 0–9 + Clear and quick amounts (Exact, ₱200, ₱500, ₱1,000), no keyboard typing. The frontend pre-checks for instant feedback; the backend is the final authority.
   On rejection, stay on the screen and show the message. Exact amount → ₱0.00 change.
@@ -166,7 +169,7 @@ STEP 0 — Lumpayao, repository setup (no branch; this is the first commit on ma
  .gitignore (Python: .venv, __pycache__, *.db, .pytest_cache; Node: node_modules, dist; editor files); README.md (title + "In progress");
  docs/ai-log/M1-cheny.md, M2-laiza.md, M3-lumpayao.md (a heading each). Do not create backend/ or frontend/.
  End: print the commit command and `git branch -M main ; git push -u origin main`. Then tell microxxd300 to add a rule for main
- (Settings → Branches or Rules → Rulesets: require a pull request before merging, 1 approval) and to confirm that hcheniii and pueblolaiza
+ (Settings → Branches or Rules → Rulesets: require a pull request before merging, 1 approval) and to confirm that hchenii and pueblolaiza
  have ACCEPTED their collaborator invites. Print `git pull origin main` for the frontend clone. Wait for "done" (no PR for this step).
 STEP 1 — Lumpayao, feature/backend-products:
  Part 1: requirements.txt, app/main.py with CORS + {"detail"} error handlers + GET /api/health, tests/test_health.py.

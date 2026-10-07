@@ -67,12 +67,20 @@ def test_server_error_has_no_cors_header_for_other_origins(crashing_client):
     assert "access-control-allow-origin" not in response.headers
 
 
-def test_validation_message_names_the_field():
+def test_validation_message_names_an_unknown_field():
+    exc = RequestValidationError(
+        [{"loc": ("body", "customer", "name"), "msg": "Field required", "type": "missing"}]
+    )
+
+    assert validation_message(exc) == "customer.name: Field required."
+
+
+def test_validation_message_is_friendly_for_known_fields():
     exc = RequestValidationError(
         [{"loc": ("body", "items", 0, "quantity"), "msg": "Input should be greater than 0", "type": "greater_than"}]
     )
 
-    assert validation_message(exc) == "items.0.quantity: Input should be greater than 0."
+    assert validation_message(exc) == "Quantity must be between 1 and 99."
 
 
 def test_validation_message_strips_pydantic_prefix():
