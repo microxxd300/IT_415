@@ -1,27 +1,17 @@
 """FastAPI application for the Campus Store touchscreen POS kiosk."""
 
-from contextlib import asynccontextmanager
-
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.database import init_db
 from app.routers import products
 
 # The Vite dev server can be opened with either host name.
 ALLOWED_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    init_db()  # create tables and seed products before the first request
-    yield
-
-
-app = FastAPI(title="Campus Store POS Kiosk API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="Campus Store POS Kiosk API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,

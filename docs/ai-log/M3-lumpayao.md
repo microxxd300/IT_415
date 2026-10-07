@@ -46,3 +46,18 @@
 **Commit SHA:** 3eceaf7
 
 > Note: after the Step 1 push, Kurt asked the AI to run the git commands (add, commit, push) for his own steps to save time. Commits are still authored as Kurt Lumpayao.
+
+### AI-M3-04 — Refactoring — Lumpayao — 2026-10-07
+**Step / branch:** Step 1, during review of PR feature/backend-products
+
+**Prompt:** After the AI review reported that SQLite connections fail under concurrent requests, Kurt typed: "dont add database its not required", then chose "In memory (Recommended)" from: in memory / JSON file / keep SQLite. Follow-up typed: "go".
+
+**AI response summary:** The AI removed backend/app/database.py and the startup init_db() hook, added backend/app/store.py with the 6 products hard-coded as a Python list (integer centavos), changed GET /api/products to return that list (same JSON as before), simplified tests/conftest.py (no temporary database) and rewrote tests/test_products.py (exact products, positive integer centavos, unique ids, categories Drinks/Food/Snacks). It updated CLAUDE.md sections 2, 4, 5, 7 and 10: no database, transactions will be kept in memory in Step 4, and references become TXN-YYYYMMDD-HHMMSS-NNN so they never repeat after a server restart. The local kiosk.db was deleted.
+
+**Evaluation:** (Drafted with AI help at Kurt's request.) Correct: the exam says a database is not mandatory, the products response is unchanged, and the thread bug and misleading commit comment from the review are gone because SQLite is gone. Limitation: completed transactions (Step 4) will be lost when the server restarts, so receipts cannot be looked up after a restart; acceptable for one kiosk with no history requirement. The reference format changed from TXN-2026-00001 to TXN-20261007-143015-001.
+
+**Changes we made:** Kurt decided to drop the database (it is not required and is less to explain); he chose in-memory storage over a JSON file.
+
+**Verification:** `pytest -v` → 10 passed (6 health + 4 products). Same 400-concurrent-request test as in the review: before 380 × 500 errors, after 400 × 200 with no errors; no kiosk.db is created.
+
+**Commit SHA:** fill in after committing
