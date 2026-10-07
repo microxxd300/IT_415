@@ -37,10 +37,10 @@
 
 **AI response summary:** The AI created src/state/OrderContext.jsx: one useReducer store (screen, category, products, cart, transaction) with addItem, increase, decrease (from 1 removes the line), remove, setCategory, goTo, setTransaction, newTransaction (clears everything except products and shows "New transaction started — previous order cleared"), plus cartTotal and itemCount; a ToastProvider with useToast() → showToast(message, type). It added one extra action, setProducts, so App can store the loaded products. Header ("Campus Store · Self-service kiosk"), StepIndicator (1 Order · 2 Review · 3 Payment · 4 Receipt, finished steps get a ✓), Toast (always-present live region, message disappears after 2.5 s), base.css (light grey background, white rounded cards, dark and amber buttons, 18px base font, buttons at least 56px tall, no hover-only actions), App.jsx (loading text, error message with "Try again", screen switch without a router) and 8 placeholder screens with Back/Continue buttons. It also added an empty favicon link in index.html to stop a 404 in the console.
 
-**Evaluation:** TODO
+**Evaluation:** (Drafted with AI help at Cheny's request.) Correct: the store follows the section 6 contract, decreasing from 1 removes the line so quantities never go negative, and New Transaction keeps only the product list; the AI tested the full click-through in a real browser instead of only building. Deviation: it added setProducts, which is not in the contract, so App can save the loaded products — acceptable because nothing else changes. Limitations: the reducer's cart logic is not unit-tested yet (it moves to cart.js with tests in Step 3), and the "Try again" error state was not tested in the browser because the backend was running.
 
-**Changes we made:** TODO
+**Changes we made:** None — accepted as generated.
 
 **Verification:** `npm test` → 5 passed; `npm run build` → OK. Browser (Chrome, 1280×800, backend running): Item Selection shows "6 products loaded"; Proceed → Order Summary (step 1 ✓) → Continue → Payment Method (3 buttons) → QR Payment → Confirm → Payment Successful → View Receipt → Receipt → New Transaction → back to Item Selection with the toast "New transaction started — previous order cleared". Console: only a favicon 404, fixed with the favicon link.
 
-**Commit SHA:** fill in after committing
+**Commit SHA:** d3c32ff
